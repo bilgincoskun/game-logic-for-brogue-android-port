@@ -2,7 +2,7 @@
 
 #ifdef BROGUE_TCOD
 #include "libtcod/libtcod.h"
-TCOD_renderer_t renderer = TCOD_RENDERER_SDL; // the sdl renderer is more reliable than the opengl renderer
+TCOD_renderer_t renderer = TCOD_RENDERER_SDL2; // the sdl renderer is more reliable than the opengl renderer
 short brogueFontSize = -1;
 #endif
 
@@ -57,7 +57,7 @@ static void printCommandlineHelp() {
 	"--term         -t          run in ncurses-based terminal mode\n"
 #endif
 #ifdef BROGUE_TCOD
-	"--SDL                      force libtcod mode with an SDL renderer (default)\n"
+	"--SDL                      force libtcod mode with an SDL2 renderer (default)\n"
 	"--opengl       -gl         force libtcod mode with an OpenGL renderer\n"
 #endif
 	);
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 
 #ifdef BROGUE_TCOD
 		if (strcmp(argv[i], "--SDL") == 0) {
-			renderer = TCOD_RENDERER_SDL;
+			renderer = TCOD_RENDERER_SDL2;
 			currentConsole = tcodConsole;
 			continue;
 		}

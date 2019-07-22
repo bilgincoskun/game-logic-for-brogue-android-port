@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "libtcod/libtcod.h"
 #include "platform.h"
 
@@ -33,9 +33,9 @@ static void loadFont(int detectSize)
 		int fontWidths[13] = {112, 128, 144, 160, 176, 192, 208, 224, 240, 256, 272, 288, 304}; // widths of the font graphics (divide by 16 to get individual character width)
 		int fontHeights[13] = {176, 208, 240, 272, 304, 336, 368, 400, 432, 464, 496, 528, 528}; // heights of the font graphics (divide by 16 to get individual character height)
 
-		const SDL_VideoInfo* vInfo = SDL_GetVideoInfo();
-		int screenWidth = desktop_width = vInfo->current_w;
-		int screenHeight = desktop_height = vInfo->current_h;
+        TCOD_sys_get_current_resolution(&desktop_width,&desktop_height);
+		int screenWidth = desktop_width;
+		int screenHeight = desktop_height;
 
 		// adjust for title bars and whatever -- very approximate, but better than the alternative
 		screenWidth -= 6;
@@ -59,8 +59,7 @@ static void loadFont(int detectSize)
 	TCOD_console_map_ascii_codes_to_font(0, 255, 0, 0);
 	TCOD_console_set_keyboard_repeat(175, 30);
 	TCOD_mouse_show_cursor(1);
-
-	SDL_WM_SetIcon(SDL_LoadBMP("icon.bmp"), NULL);
+    SDL_SetWindowIcon(TCOD_sys_get_sdl_window(),SDL_LoadBMP("icon.bmp"));
 }
 
 static void gameLoop()
@@ -223,9 +222,8 @@ static void rewriteKey(TCOD_key_t *key, boolean text) {
 }
 
 static void getModifiers(rogueEvent *returnEvent) {
-	Uint8 *keystate = SDL_GetKeyState(NULL);
-	returnEvent->controlKey = keystate[SDLK_LCTRL] || keystate[SDLK_RCTRL];
-	returnEvent->shiftKey = keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT];
+    returnEvent->controlKey = TCOD_console_is_key_pressed(TCODK_CONTROL);
+    returnEvent->shiftKey = TCOD_console_is_key_pressed(TCODK_SHIFT);
 }
 
 
@@ -424,7 +422,7 @@ static void tcod_nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput,
 			return;
 		}
 		
-		if (!(serverMode || (SDL_GetAppState() & SDL_APPACTIVE))) {
+		if (!(serverMode || TCOD_console_is_active())) {
 			TCOD_sys_sleep_milli(100);
 		} else {
 			if (colorsDance) {
@@ -447,7 +445,7 @@ static void tcod_nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput,
 
 		mouse = TCOD_mouse_get_status();
 
-		if (serverMode || (SDL_GetAppState() & SDL_APPACTIVE)) {
+		if (serverMode || TCOD_console_is_active()) {
 			x = mouse.cx;
 			y = mouse.cy;
 		} else {
