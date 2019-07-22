@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <SDL/SDL.h>
-#include "libtcod.h"
+#include "libtcod/libtcod.h"
 #include "platform.h"
 
 #if TCOD_TECHVERSION >= 0x01050103
@@ -84,12 +84,12 @@ static void tcod_plotChar(uchar inputChar,
 	TCOD_color_t fore;
 	TCOD_color_t back;
 	
-	fore.r = (uint8) foreRed * 255 / 100;
-	fore.g = (uint8) foreGreen * 255 / 100;
-	fore.b = (uint8) foreBlue * 255 / 100;
-	back.r = (uint8) backRed * 255 / 100;
-	back.g = (uint8) backGreen * 255 / 100;
-	back.b = (uint8) backBlue * 255 / 100;
+	fore.r = (uint8_t) foreRed * 255 / 100;
+	fore.g = (uint8_t) foreGreen * 255 / 100;
+	fore.b = (uint8_t) foreBlue * 255 / 100;
+	back.r = (uint8_t) backRed * 255 / 100;
+	back.g = (uint8_t) backGreen * 255 / 100;
+	back.b = (uint8_t) backBlue * 255 / 100;
 	
 	if (inputChar == STATUE_CHAR) {
 		inputChar = 223;
@@ -360,7 +360,7 @@ static void tcod_nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput,
 	boolean tryAgain;
 	TCOD_key_t key;
 	TCOD_mouse_t mouse;
-	uint32 theTime, waitTime;
+	uint32_t theTime, waitTime;
 	short x, y;
 	
 	TCOD_console_flush();
