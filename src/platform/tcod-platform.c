@@ -54,21 +54,19 @@ static void loadFont(int detectSize)
 	sprintf(font, "fonts/font-%i.png", brogueFontSize);
 	
 	TCOD_console_set_custom_font(font, (TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW), 0, 0);
-	TCOD_console_init_root(COLS, ROWS, "Brogue", false, renderer);
+    int result;
+    if(result = TCOD_console_init_root(COLS, ROWS, "Brogue", false, renderer)){
+        printf("Cannot initialize tcod console");
+        exit(result);
+    }
 
 	TCOD_console_map_ascii_codes_to_font(0, 255, 0, 0);
-	TCOD_console_set_keyboard_repeat(175, 30);
 	TCOD_mouse_show_cursor(1);
     SDL_SetWindowIcon(TCOD_sys_get_sdl_window(),SDL_LoadBMP("icon.bmp"));
 }
 
 static void gameLoop()
 {
-	if (SDL_Init(SDL_INIT_VIDEO)) {
-		printf ("Could not start SDL.\n");
-		return;
-	}
-
 	loadFont(true);
 	rogueMain();
 
@@ -355,7 +353,6 @@ static boolean tcod_pauseForMilliseconds(short milliseconds)
 
 static void tcod_nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput, boolean colorsDance)
 {
-	boolean tryAgain;
 	TCOD_key_t key;
 	TCOD_mouse_t mouse;
 	uint32_t theTime, waitTime;
@@ -377,8 +374,6 @@ static void tcod_nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput,
 			returnEvent->param1 = ESCAPE_KEY;
 			return;
 		}
-		
-		tryAgain = false;
 		
 		if (bufferedKey.vk != TCODK_NONE) {
 			rewriteKey(&bufferedKey, textInput);
