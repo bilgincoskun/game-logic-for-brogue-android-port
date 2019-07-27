@@ -1,8 +1,7 @@
-
 SDL_FLAGS = `sdl2-config --cflags` `sdl2-config --libs`
-LIBTCODDIR=src/libtcod-1.5.2
 CFLAGS=-Isrc/brogue -Isrc/platform -Wall -Wno-parentheses ${DEFINES}
-RELEASENAME=brogue-1.7.4
+VERSION=1.7.5
+RELEASENAME=brogue-${VERSION}
 LASTTARGET := $(shell ./brogue --target)
 CC ?= gcc
 
@@ -43,22 +42,19 @@ BROGUEFILES=src/brogue/Architect.o \
 	src/platform/tcod-platform.o \
 	src/platform/term.o
 
-TCOD_DEF = -DBROGUE_TCOD -I$(LIBTCODDIR)/include
-TCOD_DEP = ${LIBTCODDIR}
+TCOD_DEF = -DBROGUE_TCOD
 TCOD_LIB = -L. -L${LIBTCODDIR} ${SDL_FLAGS} -ltcod -Wl,-rpath,.
 
 CURSES_DEF = -DBROGUE_CURSES
 CURSES_LIB = -lncurses -lm
 
 
-tcod : DEPENDENCIES += ${TCOD_DEP}
 tcod : DEFINES += ${TCOD_DEF}
 tcod : LIBRARIES += ${TCOD_LIB}
 
 curses : DEFINES = ${CURSES_DEF}
 curses : LIBRARIES = ${CURSES_LIB}
 
-both : DEPENDENCIES += ${TCOD_DEP}
 both : DEFINES += ${TCOD_DEF} ${CURSES_DEF}
 both : LIBRARIES += ${TCOD_LIB} ${CURSES_LIB}
 
@@ -87,9 +83,6 @@ bin/brogue : ${DEPENDENCIES} ${BROGUEFILES}
 
 clean : 
 	rm -f src/brogue/*.o src/platform/*.o bin/brogue
-
-${LIBTCODDIR} :
-	src/get-libtcod.sh
 
 tar : both
 	rm -f ${RELEASENAME}.tar.gz
