@@ -196,7 +196,7 @@ struct mapsymbol {
 static struct mapsymbol *keymap = NULL;
 
 static void rewriteKey(TCOD_key_t *key, boolean text) {
-    if(!text && key->vk == TCODK_TEXT){
+    if(!text && (key->vk == TCODK_TEXT || key->c)){
         key->vk = TCODK_CHAR;
         key->c = key->text[0];
     }
