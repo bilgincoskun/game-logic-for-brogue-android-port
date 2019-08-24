@@ -1,5 +1,5 @@
 SDL_FLAGS = `sdl2-config --cflags` `sdl2-config --libs`
-CFLAGS=-Isrc/brogue -Isrc/platform -Wall -Wno-parentheses ${DEFINES}
+CFLAGS=-Iinclude -Wall -Wno-parentheses ${DEFINES}
 VERSION=1.7.5
 RELEASENAME=brogue-${VERSION}
 LASTTARGET := $(shell ./brogue --target)
@@ -98,10 +98,8 @@ tar : both
 	bin/icon.bmp \
 	bin/brogue-icon.png \
 	$(wildcard bin/fonts/*.png) \
-	$(wildcard bin/*.so) \
 	$(wildcard src/*.sh) \
 	$(wildcard src/brogue/*.c) \
-	$(wildcard src/brogue/*.h) \
 	$(wildcard src/platform/*.c) \
-	$(wildcard src/platform/*.h)
+	$(wildcard include/*.h)
 
