@@ -2678,27 +2678,6 @@ boolean getInputTextString(char *inputText,
 				charNum++;
 			}
         }
-#ifdef USE_CLIPBOARD
-        else if (keystroke == TAB_KEY) {
-            char* clipboard = getClipboard();
-            for (int i=0; i<(int) min(strlen(clipboard), (unsigned long) (maxLength - charNum)); ++i) {
-                
-                char character = clipboard[i];
-                
-                if (character >= textEntryBounds[textEntryType][0]
-                    && character <= textEntryBounds[textEntryType][1]) { // allow only permitted input
-                    if (textEntryType == TEXT_INPUT_FILENAME
-                        && characterForbiddenInFilename(character)) {
-                        character = '-';
-                    }
-                    plotCharWithColor(character, x + charNum, y, &white, &black);
-                    if (charNum < maxLength) {
-                        charNum++;
-                    }
-                }
-            }
-        }
-#endif
 	} while (keystroke != RETURN_KEY && keystroke != ESCAPE_KEY && keystroke != ENTER_KEY);
 	
 	if (useDialogBox) {
