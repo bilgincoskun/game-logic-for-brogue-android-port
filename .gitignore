@@ -1,2 +1,3 @@
 src/*/*.o
 bin/brogue
+build/
