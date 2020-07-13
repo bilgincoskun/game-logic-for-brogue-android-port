@@ -986,18 +986,18 @@ void normColor(color *baseColor, const short aggregateMultiplier, const short co
 }
 
 // okay, this is kind of a beast...
-void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeColor, color *returnBackColor) {
+void getCellAppearance(short x, short y, enum displayGlyph *returnChar, color *returnForeColor, color *returnBackColor) {
 	short bestBCPriority, bestFCPriority, bestCharPriority;
     short distance;
-	uchar cellChar = 0;
+    enum displayGlyph cellChar = 0;
 	color cellForeColor, cellBackColor, lightMultiplierColor = black, gasAugmentColor;
 	boolean monsterWithDetectedItem = false, needDistinctness = false;
 	short gasAugmentWeight = 0;
 	creature *monst = NULL;
 	item *theItem = NULL;
     enum tileType tile = NOTHING;
-	const uchar itemChars[] = {POTION_CHAR, SCROLL_CHAR, FOOD_CHAR, WAND_CHAR,
-						STAFF_CHAR, GOLD_CHAR, ARMOR_CHAR, WEAPON_CHAR, RING_CHAR, CHARM_CHAR};
+    const enum displayGlyph itemChars[] = {G_POTION, G_SCROLL, G_FOOD, G_WAND,
+                        G_STAFF, G_GOLD, G_ARMOR, G_WEAPON, G_RING, G_CHARM};
 	enum dungeonLayers layer, maxLayer;
 	
 	assureCosmeticRNG;
@@ -1115,9 +1115,9 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 				   || monsterWithDetectedItem){
 			cellChar = itemMagicChar(theItem);
 			needDistinctness = true;
-			if (cellChar == GOOD_MAGIC_CHAR) {
+			if (cellChar == G_GOOD_MAGIC) {
 				cellForeColor = goodMessageColor;
-			} else if (cellChar == BAD_MAGIC_CHAR) {
+			} else if (cellChar == G_BAD_MAGIC) {
 				cellForeColor = badMessageColor;
 			} else {
                 cellForeColor = white;
@@ -1400,8 +1400,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 }
 
 void refreshDungeonCell(short x, short y) {
-	uchar cellChar;
-    brogueAssert(coordinatesAreInMap(x, y));
+    enum displayGlyph cellChar;
 	color foreColor, backColor;
 	getCellAppearance(x, y, &cellChar, &foreColor, &backColor);
 	plotCharWithColor(cellChar, mapToWindowX(x), mapToWindowY(y), &foreColor, &backColor);
@@ -1495,9 +1494,9 @@ void swapColors(color *color1, color *color2) {
 }
 
 // Assumes colors are pre-baked.
-void blendAppearances(const color *fromForeColor, const color *fromBackColor, const uchar fromChar,
-                      const color *toForeColor, const color *toBackColor, const uchar toChar,
-                      color *retForeColor, color *retBackColor, uchar *retChar,
+void blendAppearances(const color *fromForeColor, const color *fromBackColor, const enum displayGlyph fromChar,
+                      const color *toForeColor, const color *toBackColor, const enum displayGlyph toChar,
+                      color *retForeColor, color *retBackColor, enum displayGlyph *retChar,
                       const short percent) {
     // Straight average of the back color:
     *retBackColor = *fromBackColor;
@@ -1535,7 +1534,7 @@ void irisFadeBetweenBuffers(cellDisplayBuffer fromBuf[COLS][ROWS],
     short i, j, frame, percentBasis, thisCellPercent;
     boolean fastForward;
     color fromBackColor, toBackColor, fromForeColor, toForeColor, currentForeColor, currentBackColor;
-    uchar fromChar, toChar, currentChar;
+    enum displayGlyph fromChar, toChar, currentChar;
     short completionMap[COLS][ROWS], maxDistance;
     
     fastForward = false;
@@ -1595,7 +1594,7 @@ void irisFadeBetweenBuffers(cellDisplayBuffer fromBuf[COLS][ROWS],
 
 // takes dungeon coordinates
 void colorBlendCell(short x, short y, color *hiliteColor, short hiliteStrength) {
-	uchar displayChar;
+    enum displayGlyph displayChar;
 	color foreColor, backColor;
 	
 	getCellAppearance(x, y, &displayChar, &foreColor, &backColor);
@@ -1606,7 +1605,7 @@ void colorBlendCell(short x, short y, color *hiliteColor, short hiliteStrength) 
 
 // takes dungeon coordinates
 void hiliteCell(short x, short y, const color *hiliteColor, short hiliteStrength, boolean distinctColors) {
-	uchar displayChar;
+    enum displayGlyph displayChar;
 	color foreColor, backColor;
 	
 	assureCosmeticRNG;
@@ -1640,7 +1639,7 @@ void colorMultiplierFromDungeonLight(short x, short y, color *editColor) {
 	editColor->colorDances = false;
 }
 
-void plotCharWithColor(uchar inputChar, short xLoc, short yLoc, const color *cellForeColor, const color *cellBackColor) {
+void plotCharWithColor(enum displayGlyph inputChar, short xLoc, short yLoc, const color *cellForeColor, const color *cellBackColor) {
     short oldRNG;
 	
 	short foreRed = cellForeColor->red,
@@ -1709,7 +1708,7 @@ void plotCharWithColor(uchar inputChar, short xLoc, short yLoc, const color *cel
 	restoreRNG;
 }
 
-void plotCharToBuffer(uchar inputChar, short x, short y, color *foreColor, color *backColor, cellDisplayBuffer dbuf[COLS][ROWS]) {
+void plotCharToBuffer(enum displayGlyph inputChar, short x, short y, color *foreColor, color *backColor, cellDisplayBuffer dbuf[COLS][ROWS]) {
 	short oldRNG;
     
     if (!dbuf) {
@@ -1733,9 +1732,9 @@ void plotCharToBuffer(uchar inputChar, short x, short y, color *foreColor, color
 	restoreRNG;
 }
 
-void plotForegroundChar(uchar inputChar, short x, short y, color *foreColor, boolean affectedByLighting) {
+void plotForegroundChar(enum displayGlyph inputChar, short x, short y, color *foreColor, boolean affectedByLighting) {
     color multColor, myColor, backColor, ignoredColor;
-    uchar ignoredChar;
+    enum displayGlyph ignoredChar;
     
     myColor = *foreColor;
     getCellAppearance(x, y, &ignoredChar, &ignoredColor, &backColor);
@@ -1891,7 +1890,7 @@ color colorFromComponents(char rgb[3]) {
 void overlayDisplayBuffer(cellDisplayBuffer overBuf[COLS][ROWS], cellDisplayBuffer previousBuf[COLS][ROWS]) {
 	short i, j;
 	color foreColor, backColor, tempColor;
-	uchar character;
+    enum displayGlyph character;
 	
 	if (previousBuf) {
 		copyDisplayBuffer(previousBuf, displayBuffer);
@@ -1927,7 +1926,7 @@ void overlayDisplayBuffer(cellDisplayBuffer overBuf[COLS][ROWS], cellDisplayBuff
 // Strengths are percentages measuring how hard the color flashes at its peak.
 void flashForeground(short *x, short *y, color **flashColor, short *flashStrength, short count, short frames) {
 	short i, j, percent;
-	uchar *displayChar;
+    enum displayGlyph *displayChar;
 	color *bColor, *fColor, newColor;
     short oldRNG;
 	
@@ -1939,7 +1938,7 @@ void flashForeground(short *x, short *y, color **flashColor, short *flashStrengt
     rogue.RNG = RNG_COSMETIC;
 	//assureCosmeticRNG;
 	
-	displayChar = (uchar *) malloc(count * sizeof(uchar));
+    displayChar = (enum displayGlyph *) malloc(count * sizeof(enum displayGlyph));
 	fColor = (color *) malloc(count * sizeof(color));
 	bColor = (color *) malloc(count * sizeof(color));
 	
@@ -2040,7 +2039,7 @@ void funkyFade(cellDisplayBuffer displayBuf[COLS][ROWS], const color *colorStart
 	short i, j, n, weight;
 	double x2, y2, weightGrid[COLS][ROWS][3], percentComplete;
 	color tempColor, colorMid, foreColor, backColor;
-	uchar tempChar;
+    enum displayGlyph tempChar;
 	short **distanceMap;
 	boolean fastForward;
     
@@ -2150,7 +2149,7 @@ void displayWaypoints() {
 void displayMachines() {
 	short i, j;
 	color foreColor, backColor, machineColors[50];
-	uchar dchar;
+    enum displayGlyph dchar;
 	
 	assureCosmeticRNG;
 	
@@ -2188,7 +2187,7 @@ void displayMachines() {
 void displayChokeMap() {
 	short i, j;
 	color foreColor, backColor;
-	uchar dchar;
+    enum displayGlyph dchar;
 	
 	for (i=0; i<DCOLS; i++) {
 		for (j=0; j<DROWS; j++) {
@@ -2213,7 +2212,7 @@ void displayChokeMap() {
 void displayLoops() {
 	short i, j;
 	color foreColor, backColor;
-	uchar dchar;
+    enum displayGlyph dchar;
 	
 	for (i=0; i<DCOLS; i++) {
 		for (j=0; j<DROWS; j++) {
@@ -2704,7 +2703,7 @@ void flashMessage(char *message, short x, short y, int time, color *fColor, colo
 	int		i, j, messageLength, percentComplete, previousPercentComplete;
 	color backColors[COLS], backColor, foreColor;
 	cellDisplayBuffer dbufs[COLS];
-	uchar dchar;
+    enum displayGlyph dchar;
     short oldRNG;
     const int stepInMs = 16;
 	
@@ -3731,9 +3730,9 @@ void printDiscoveries(short category, short count, unsigned short itemCharacter,
 			theColor = &darkGray;
             magic = magicCharDiscoverySuffix(category, i);
             if (magic == 1) {
-                plotCharToBuffer(GOOD_MAGIC_CHAR, x, y + i, &goodColor, &black, dbuf);
+                plotCharToBuffer(G_GOOD_MAGIC, x, y + i, &goodColor, &black, dbuf);
             } else if (magic == -1) {
-                plotCharToBuffer(BAD_MAGIC_CHAR, x, y + i, &badColor, &black, dbuf);
+                plotCharToBuffer(G_BAD_MAGIC, x, y + i, &badColor, &black, dbuf);
             }
 		}
 		strcpy(buf, theTable[i].name);
@@ -3759,19 +3758,19 @@ void printDiscoveriesScreen() {
 	clearDisplayBuffer(dbuf);
 	
 	printString("-- SCROLLS --", mapToWindowX(2), y = mapToWindowY(1), &flavorTextColor, &black, dbuf);
-	printDiscoveries(SCROLL, NUMBER_SCROLL_KINDS, SCROLL_CHAR, mapToWindowX(3), ++y, dbuf);
+    printDiscoveries(SCROLL, NUMBER_SCROLL_KINDS, G_SCROLL, mapToWindowX(3), ++y, dbuf);
 	
 	printString("-- RINGS --", mapToWindowX(2), y += NUMBER_SCROLL_KINDS + 1, &flavorTextColor, &black, dbuf);
-	printDiscoveries(RING, NUMBER_RING_KINDS, RING_CHAR, mapToWindowX(3), ++y, dbuf);
+    printDiscoveries(RING, NUMBER_RING_KINDS, G_RING, mapToWindowX(3), ++y, dbuf);
 	
 	printString("-- POTIONS --", mapToWindowX(29), y = mapToWindowY(1), &flavorTextColor, &black, dbuf);
-	printDiscoveries(POTION, NUMBER_POTION_KINDS, POTION_CHAR, mapToWindowX(30), ++y, dbuf);
+    printDiscoveries(POTION, NUMBER_POTION_KINDS, G_POTION, mapToWindowX(30), ++y, dbuf);
 	
 	printString("-- STAFFS --", mapToWindowX(53), y = mapToWindowY(1), &flavorTextColor, &black, dbuf);
-	printDiscoveries(STAFF, NUMBER_STAFF_KINDS, STAFF_CHAR, mapToWindowX(54), ++y, dbuf);
+    printDiscoveries(STAFF, NUMBER_STAFF_KINDS, G_STAFF, mapToWindowX(54), ++y, dbuf);
     
 	printString("-- WANDS --", mapToWindowX(53), y += NUMBER_STAFF_KINDS + 1, &flavorTextColor, &black, dbuf);
-	printDiscoveries(WAND, NUMBER_WAND_KINDS, WAND_CHAR, mapToWindowX(54), ++y, dbuf);
+    printDiscoveries(WAND, NUMBER_WAND_KINDS, G_WAND, mapToWindowX(54), ++y, dbuf);
     
     printString(KEYBOARD_LABELS ? "-- press any key to continue --" : "-- touch anywhere to continue --",
                 mapToWindowX(20), mapToWindowY(DROWS-2), &itemMessageColor, &black, dbuf);
@@ -3834,7 +3833,7 @@ void printDiscoveriesScreen() {
 //        if (magic != -1) {
 //            strcat(buttons[i].text, goodColorEscape);
 //            strcat(buttons[i].text, "*");
-//            buttons[i].symbol[symbolCount++] = GOOD_MAGIC_CHAR;
+//            buttons[i].symbol[symbolCount++] = G_GOOD_MAGIC;
 //		}
 //        if (magic != 1) {
 //            strcat(buttons[i].text, badColorEscape);
@@ -3951,7 +3950,7 @@ void printHighScores(boolean hiliteMostRecent) {
 void displayGrid(short **map) {
 	short i, j, score, topRange, bottomRange;
 	color tempColor, foreColor, backColor;
-	uchar dchar;
+    enum displayGlyph dchar;
 	
 	topRange = -30000;
 	bottomRange = 30000;
@@ -4094,7 +4093,7 @@ short creatureHealthChangePercent(creature *monst) {
 // returns the y-coordinate after the last line printed
 short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight) {
 	char buf[COLS * 2], buf2[COLS * 2], monstName[COLS], tempColorEscape[5], grayColorEscape[5];
-	uchar monstChar;
+    enum displayGlyph monstChar;
 	color monstForeColor, monstBackColor, healthBarColor, tempColor;
 	short initialY, i, j, highlightStrength, displayedArmor, percent;
 	boolean inPath;
@@ -4421,7 +4420,7 @@ void describeHallucinatedItem(char *buf) {
 // Returns the y-coordinate after the last line printed.
 short printItemInfo(item *theItem, short y, boolean dim, boolean highlight) {
 	char name[COLS * 3];
-	uchar itemChar;
+    enum displayGlyph itemChar;
 	color itemForeColor, itemBackColor;
 	short initialY, i, j, highlightStrength, lineCount;
 	boolean inPath;
@@ -4482,7 +4481,7 @@ short printItemInfo(item *theItem, short y, boolean dim, boolean highlight) {
 
 // Returns the y-coordinate after the last line printed.
 short printTerrainInfo(short x, short y, short py, const char *description, boolean dim, boolean highlight) {
-	uchar displayChar;
+    enum displayGlyph displayChar;
 	color foreColor, backColor;
 	short initialY, i, j, highlightStrength, lineCount;
 	boolean inPath;

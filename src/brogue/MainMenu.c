@@ -506,7 +506,7 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
 			// Create up and down arrows.
 			initializeButton(&(buttons[i]));
 			strcpy(buttons[i].text, "     *     ");
-			buttons[i].symbol[0] = UP_ARROW_CHAR;
+			buttons[i].symbol[0] = G_UP_ARROW;
 			if (currentPageStart <= 0) {
 				buttons[i].flags &= ~(B_ENABLED | B_DRAW);
 			} else {
@@ -520,7 +520,7 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
 			i++;
 			initializeButton(&(buttons[i]));
 			strcpy(buttons[i].text, "     *     ");
-			buttons[i].symbol[0] = DOWN_ARROW_CHAR;
+			buttons[i].symbol[0] = G_DOWN_ARROW;
 			if (currentPageStart + FILES_ON_PAGE_MAX >= count) {
 				buttons[i].flags &= ~(B_ENABLED | B_DRAW);
 			} else {

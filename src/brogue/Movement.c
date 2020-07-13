@@ -187,13 +187,13 @@ void describeLocation(char *buf, short x, short y) {
 	}
 	if (magicItem) {
 		switch (itemMagicChar(magicItem)) {
-			case GOOD_MAGIC_CHAR:
+			case G_GOOD_MAGIC:
 				strcpy(object, "benevolent magic");
 				break;
-			case BAD_MAGIC_CHAR:
+			case G_BAD_MAGIC:
 				strcpy(object, "malevolent magic");
 				break;
-			case AMULET_CHAR:
+			case G_AMULET:
 				strcpy(object, "the Amulet of Yendor");
 				break;
 			default:

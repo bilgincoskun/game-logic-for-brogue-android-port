@@ -27,6 +27,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <ctype.h>
 
 #include "platform.h"
 
@@ -44,7 +45,7 @@ typedef struct brogueScoreEntry {
 
 brogueScoreEntry scoreBuffer[HIGH_SCORES_COUNT];
 
-void plotChar(uchar inputChar,
+void plotChar(enum displayGlyph inputChar,
 			  short xLoc, short yLoc,
 			  short foreRed, short foreGreen, short foreBlue,
 			  short backRed, short backGreen, short backBlue) {
@@ -398,9 +399,11 @@ fileEntry *listFiles(short *fileCount, char **namebuffer) {
 	return files;
 }
 
+
 // end of file listing
 
 void initializeLaunchArguments(enum NGCommands *command, char *path, unsigned long *seed) {
 	// we've actually already done this at this point, except for the seed.
 }
+
 

@@ -73,11 +73,11 @@ static void gameLoop()
 	TCOD_console_delete(NULL);
 }
 
-static void tcod_plotChar(uchar inputChar,
+static void tcod_plotChar(enum displayGlyph inputChar,
 			  short xLoc, short yLoc,
 			  short foreRed, short foreGreen, short foreBlue,
 			  short backRed, short backGreen, short backBlue) {
-	
+//Incomplete conversion	
 	TCOD_color_t fore;
 	TCOD_color_t back;
 	
@@ -87,41 +87,10 @@ static void tcod_plotChar(uchar inputChar,
 	back.r = (uint8_t) backRed * 255 / 100;
 	back.g = (uint8_t) backGreen * 255 / 100;
 	back.b = (uint8_t) backBlue * 255 / 100;
-	
-	if (inputChar == STATUE_CHAR) {
-		inputChar = 223;
-	} else if (inputChar > 255) {
-		switch (inputChar) {
-#ifdef USE_UNICODE
-			case FLOOR_CHAR: inputChar = 128 + 0; break;
-			case CHASM_CHAR: inputChar = 128 + 1; break;
-			case TRAP_CHAR: inputChar = 128 + 2; break;
-			case FIRE_CHAR: inputChar = 128 + 3; break;
-			case FOLIAGE_CHAR: inputChar = 128 + 4; break;
-			case AMULET_CHAR: inputChar = 128 + 5; break;
-			case SCROLL_CHAR: inputChar = 128 + 6; break;
-			case RING_CHAR: inputChar = 128 + 7; break;
-			case WEAPON_CHAR: inputChar = 128 + 8; break;
-			case GEM_CHAR: inputChar = 128 + 9; break;
-			case TOTEM_CHAR: inputChar = 128 + 10; break;
-			case BAD_MAGIC_CHAR: inputChar = 128 + 12; break;
-			case GOOD_MAGIC_CHAR: inputChar = 128 + 13; break;
-
-			case DOWN_ARROW_CHAR: inputChar = 144 + 1; break;
-			case LEFT_ARROW_CHAR: inputChar = 144 + 2; break;
-			case RIGHT_ARROW_CHAR: inputChar = 144 + 3; break;
-			case UP_TRIANGLE_CHAR: inputChar = 144 + 4; break;
-			case DOWN_TRIANGLE_CHAR: inputChar = 144 + 5; break;
-			case OMEGA_CHAR: inputChar = 144 + 6; break;
-			case THETA_CHAR: inputChar = 144 + 7; break;
-			case LAMDA_CHAR: inputChar = 144 + 8; break;
-			case KOPPA_CHAR: inputChar = 144 + 9; break; // is this right?
-			case CHARM_CHAR: inputChar = 144 + 9; break;
-			case LOZENGE_CHAR: inputChar = 144 + 10; break;
-			case CROSS_PRODUCT_CHAR: inputChar = 144 + 11; break;
-#endif
-			default: inputChar = '?'; break;
-		}
+    switch(inputChar){
+        case G_PLAYER: inputChar = '@'; break;
+        /*unimplemented*/
+        default: inputChar = '?';
 	}
 	TCOD_console_put_char_ex(NULL, xLoc, yLoc, (int) inputChar, fore, back);
 }
