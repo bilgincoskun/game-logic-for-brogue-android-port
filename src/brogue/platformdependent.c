@@ -49,7 +49,7 @@ unsigned int glyphToUnicode(enum displayGlyph glyph) {
         case G_POTION: return '!';
         case G_GRASS: return '"';
         case G_WALL: return '#';
-        case G_DEMON: return '&';
+        case G_EASY: return '&';
         case G_OPEN_DOOR: return '\'';
         case G_GOLD: return '*';
         case G_CLOSED_DOOR: return '+';
@@ -200,7 +200,7 @@ boolean isEnvironmentGlyph(enum displayGlyph glyph) {
         // creatures
         case G_ANCIENT_SPIRIT: case G_BAT: case G_BLOAT: case G_BOG_MONSTER:
         case G_CENTAUR: case G_CENTIPEDE: case G_DAR_BATTLEMAGE: case G_DAR_BLADEMASTER:
-        case G_DAR_PRIESTESS: case G_DEMON: case G_DRAGON: case G_EEL:
+        case G_DAR_PRIESTESS: case G_EASY: case G_DRAGON: case G_EEL:
         case G_FLAMEDANCER: case G_FURY: case G_GOBLIN: case G_GOBLIN_CHIEFTAN:
         case G_GOBLIN_MAGIC: case G_GOLEM: case G_GUARDIAN: case G_IFRIT:
         case G_IMP: case G_JACKAL: case G_JELLY: case G_KOBOLD:

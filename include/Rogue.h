@@ -192,12 +192,11 @@ typedef struct pos {
 // display characters:
 
 enum displayGlyph {
-    G_UP_ARROW = 128,
+    G_UP_ARROW = 256,
     G_DOWN_ARROW,
     G_POTION,
     G_GRASS,
     G_WALL,
-    G_DEMON,
     G_OPEN_DOOR,
     G_GOLD,
     G_CLOSED_DOOR,
@@ -316,14 +315,31 @@ enum displayGlyph {
     G_ASHES,
     G_BEDROLL,
     G_BLOODWORT_POD,
-    G_VINE,
+    G_EASY,
+    G_HOLE,
+    G_TRAP_GAS,
+    G_TRAP_PARALYSIS,
+    G_TRAP_CONFUSION,
+    G_TRAP_FIRE,
+    G_TRAP_FLOOD,
+    G_TRAP_NET,
+    G_TRAP_ALARM,
+    G_PRESSURE_PLATE,
+    G_PRESSURE_PLATE_INACTIVE,
+    G_GLOWING_GLYPH,
+    G_SACRED_GLYPH,
+    G_GOOD_ITEM,
+    G_BAD_ITEM,
+    G_AMULET_ITEM,
     G_NET,
+    G_VINE,
+    G_FALLEN_TORCH,
+    G_CRYSTAL_WALL,
     G_LICHEN,
     G_PIPES,
     G_SAC_ALTAR,
     G_ORB_ALTAR
 };
-
 enum graphicsModes {
     TEXT_GRAPHICS,
     TILES_GRAPHICS,
