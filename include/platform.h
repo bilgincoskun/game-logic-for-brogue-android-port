@@ -21,7 +21,6 @@
 #define U_OMEGA  0x03A9
 #define U_CIRCLE_BARS  0x29F2
 #define U_FILLED_CIRCLE_BARS  0x29F3
-
 struct brogueConsole {
 	void (*gameLoop)();
 	boolean (*pauseForMilliseconds)(short milliseconds);

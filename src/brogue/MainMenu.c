@@ -260,10 +260,6 @@ void initializeMenuFlames(boolean includeTitle,
 	
 }
 
-boolean isApplicationActive() {
-    return true;
-}
-
 void titleMenu() {
 	signed short flames[COLS][(ROWS + MENU_FLAME_ROW_PADDING)][3]; // red, green and blue
 	signed short colorSources[MENU_FLAME_COLOR_SOURCE_COUNT][4]; // red, green, blue, and rand, one for each color source (no more than MENU_FLAME_COLOR_SOURCE_COUNT).

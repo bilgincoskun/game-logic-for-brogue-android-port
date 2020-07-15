@@ -25,6 +25,7 @@
 #include "Rogue.h"
 #include "IncludeGlobals.h"
 #include <math.h>
+#include <stdint.h>
 
 item *initializeItem() {
 	short i;
@@ -2350,7 +2351,7 @@ void itemDetails(char *buf, item *theItem) {
 								fp_staffEntrancementDuration(enchant + FP_FACTOR));
 						break;
 					case STAFF_HEALING:
-						if (enchant >> FP_BASE < 10) {
+						if (enchant < 10) {
 							sprintf(buf2, "This staff will heal its target by %i%% of its maximum health. (If the staff is enchanted, this will increase to %i%%.)",
 									theItem->enchant1 * 10,
 									(theItem->enchant1 + 1) * 10);
@@ -2461,8 +2462,8 @@ void itemDetails(char *buf, item *theItem) {
                             break;
                         case RING_WISDOM:
                             sprintf(buf2, "\n\nWhen worn, your staffs will recharge at %i%% of their normal rate. (If the ring is enchanted, the rate will increase to %i%% of the normal rate.)",
-                                    (int) (10 * fp_ringWisdomMultiplier(enchant)),
-                                    (int) (10 * fp_ringWisdomMultiplier(enchant + FP_FACTOR)));
+                                    (int) (100 * fp_ringWisdomMultiplier(enchant) >> FP_BASE),
+                                    (int) (100 * fp_ringWisdomMultiplier(enchant + FP_FACTOR) >> FP_BASE));
                             strcat(buf, buf2);
                             break;
                         case RING_REAPING:
@@ -2742,7 +2743,7 @@ char displayInventory(unsigned short categoryMask,
 			buttons[i].symbol[0] = (itemMagicChar(theItem) ? itemMagicChar(theItem) : '-');
 			if (buttons[i].symbol[0] == '-') {
 				magicEscapePtr = yellowColorEscapeSequence;
-			} else if (buttons[i].symbol[0] == G_GOOD_MAGIC) {
+			} else if (buttons[i].symbol[0] == GOOD_MAGIC_CHAR) {
 				magicEscapePtr = goodColorEscapeSequence;
 			} else {
 				magicEscapePtr = badColorEscapeSequence;
@@ -3278,6 +3279,7 @@ void aggravateMonsters(short distance, short x, short y, const color *flashColor
 			}
 		}
 	}
+	freeGrid(grid);
     
     if (player.xLoc == x && player.yLoc == y) {
         player.status[STATUS_AGGRAVATING] = player.maxStatus[STATUS_AGGRAVATING] = distance;
@@ -3292,7 +3294,6 @@ void aggravateMonsters(short distance, short x, short y, const color *flashColor
             message("You hear a piercing shriek; something must have triggered a nearby alarm.", false);
         }
     }
-    freeGrid(grid);
 }
 
 // Simple line algorithm (maybe this is Bresenham?) that returns a list of coordinates
@@ -5576,7 +5577,6 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
                 if ((theItem->category & WEAPON)
                     && theItem->kind != INCENDIARY_DART
                     && hitMonsterWithProjectileWeapon(thrower, monst, theItem)) {
-		      deleteItem(theItem);
                     return;
                 }
                 break;
@@ -5701,7 +5701,6 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
 				autoIdentify(theItem);
 			}
 		}
-		deleteItem(theItem);
 		return; // potions disappear when they break
 	}
 	if ((theItem->category & WEAPON) && theItem->kind == INCENDIARY_DART) {
@@ -5709,7 +5708,6 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
 		if (pmap[x][y].flags & (HAS_MONSTER | HAS_PLAYER)) {
 			exposeCreatureToFire(monsterAtLoc(x, y));
 		}
-		deleteItem(theItem);
 		return;
 	}
 	getQualifyingLocNear(dropLoc, x, y, true, 0, (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY), (HAS_ITEM), false, false);

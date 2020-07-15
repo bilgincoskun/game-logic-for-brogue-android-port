@@ -32,7 +32,7 @@
 #define USE_UNICODE
 
 // version string -- no more than 16 bytes:
-#define BROGUE_VERSION_STRING "1.7.5.1"
+#define BROGUE_VERSION_STRING "1.7.5"
 
 // debug macros -- define DEBUGGING as 1 to enable wizard mode.
 
@@ -3099,16 +3099,16 @@ extern "C" {
     short fp_staffDamageLow(int64_t enchant);
     short fp_staffDamageHigh(int64_t enchant);
     short fp_staffDamage(int64_t enchant);
-    int fp_staffPoison(int64_t enchant);
+    short fp_staffPoison(int64_t enchant);
     short fp_staffBlinkDistance(int64_t enchant);
     short fp_staffHasteDuration(int64_t enchant);
     short fp_staffBladeCount(int64_t enchant);
     short fp_staffDiscordDuration(int64_t enchant);
-    int fp_staffProtection(int64_t enchant);
+    short fp_staffProtection(int64_t enchant);
     short fp_staffEntrancementDuration(int64_t enchant);
     short fp_ringWisdomMultiplier(int64_t enchant);
     short fp_charmHealing(int64_t enchant);
-    int fp_charmProtection(int64_t enchant);
+    short fp_charmProtection(int64_t enchant);
     short fp_charmShattering(int64_t enchant);
     short fp_charmGuardianLifespan(int64_t enchant);
     short fp_charmNegationRadius(int64_t enchant);
