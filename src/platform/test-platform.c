@@ -33,7 +33,7 @@ unsigned int glyphToUnicode(enum displayGlyph glyph) {
         case G_POTION: return '!';
         case G_GRASS: return '"';
         case G_WALL: return '#';
-        case G_DEMON: return '&';
+        case G_EASY: return '&';
         case G_OPEN_DOOR: return '\'';
         case G_GOLD: return '*';
         case G_CLOSED_DOOR: return '+';

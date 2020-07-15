@@ -405,5 +405,3 @@ fileEntry *listFiles(short *fileCount, char **namebuffer) {
 void initializeLaunchArguments(enum NGCommands *command, char *path, unsigned long *seed) {
 	// we've actually already done this at this point, except for the seed.
 }
-
-
