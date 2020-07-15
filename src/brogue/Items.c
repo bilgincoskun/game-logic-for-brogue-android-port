@@ -2743,7 +2743,7 @@ char displayInventory(unsigned short categoryMask,
 			buttons[i].symbol[0] = (itemMagicChar(theItem) ? itemMagicChar(theItem) : '-');
 			if (buttons[i].symbol[0] == '-') {
 				magicEscapePtr = yellowColorEscapeSequence;
-			} else if (buttons[i].symbol[0] == GOOD_MAGIC_CHAR) {
+			} else if (buttons[i].symbol[0] == G_GOOD_MAGIC) {
 				magicEscapePtr = goodColorEscapeSequence;
 			} else {
 				magicEscapePtr = badColorEscapeSequence;
