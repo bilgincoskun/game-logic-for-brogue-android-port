@@ -4,7 +4,7 @@
  *
  *  Created by Brian Walker on 5/22/10.
  *  Copyright 2010. All rights reserved.
- *  
+ *
  *  This file is part of Brogue.
  *
  *  Brogue is free software: you can redistribute it and/or modify
@@ -25,5 +25,5 @@
 // should go in here.
 
 #define BROGUE_LIBTCOD
-#define PLAY_AGAIN_STRING	"Press space to play again."
+#define PLAY_AGAIN_STRING   "Press space to play again."
 

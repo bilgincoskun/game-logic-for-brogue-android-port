@@ -22,26 +22,91 @@
 #define U_CIRCLE_BARS  0x29F2
 #define U_FILLED_CIRCLE_BARS  0x29F3
 
+// #define U_UP_TRIANGLE  0x2206
+// #define U_DOWN_TRIANGLE  0x2207
+// #define U_THETA  0x03B8
+// #define U_LAMDA  0x03BB
+// #define U_KOPPA  0x03DE
+// #define U_LOZENGE  0x29EB
+// #define U_CROSS_PRODUCT  0x2A2F
+
 struct brogueConsole {
-	void (*gameLoop)();
-	boolean (*pauseForMilliseconds)(short milliseconds);
-	void (*nextKeyOrMouseEvent)(rogueEvent *returnEvent, boolean textInput, boolean colorsDance);
-	void (*plotChar)(enum displayGlyph, short, short, short, short, short, short, short, short);
-	void (*remap)(const char *, const char *);
-	boolean (*modifierHeld)(int modifier);
+    /*
+    The platform entrypoint, called by the main function. Should initialize
+    and then call rogueMain.
+    */
+    void (*gameLoop)();
+
+    /*
+    Pause the game, returning a boolean specifying whether an input event
+    is available for receiving with nextKeyOrMouseEvent.
+    */
+    boolean (*pauseForMilliseconds)(short milliseconds);
+
+    /*
+    Block until an event is available and then update returnEvent with
+    its details. textInput is true iff a text-entry box is active. See
+    sdl2-platform.c for the boilerplate for colorsDance.
+    */
+    void (*nextKeyOrMouseEvent)(rogueEvent *returnEvent, boolean textInput, boolean colorsDance);
+
+    /*
+    Draw a character at a location with a specific color.
+    */
+    void (*plotChar)(
+        enum displayGlyph inputChar,
+        short x, short y,
+        short foreRed, short foreGreen, short foreBlue,
+        short backRed, short backGreen, short backBlue
+    );
+
+    void (*remap)(const char *, const char *);
+
+    /*
+    Returns whether a keyboard modifier is active -- 0 for Shift, 1 for Ctrl.
+    */
+    boolean (*modifierHeld)(int modifier);
+
+    /*
+    Optional. Notifies the platform code of an event during the game - e.g. victory
+    */
+    void (*notifyEvent)(short eventId, int data1, int data2, const char *str1, const char *str2);
+
+    /*
+    Optional. Take a screenshot in current working directory
+    */
+    boolean (*takeScreenshot)();
+
+    /*
+    Optional. Enables or disables graphical tiles, returning the new state. This
+    is called when the user changes the option in-game. It is also called at the
+    very start of the program, even before .gameLoop, to set the initial value.
+    */
+    boolean (*setGraphicsEnabled)(boolean);
 };
 
+// defined in platform
 void loadKeymap();
+void dumpScores();
+unsigned int glyphToUnicode(enum displayGlyph glyph);
 
-#ifdef BROGUE_TCOD
-extern struct brogueConsole tcodConsole;
+#ifdef BROGUE_SDL
+extern struct brogueConsole sdlConsole;
 #endif
 
 #ifdef BROGUE_CURSES
 extern struct brogueConsole cursesConsole;
 #endif
 
+#ifdef BROGUE_WEB
+extern struct brogueConsole webConsole;
+#endif
+
 extern struct brogueConsole currentConsole;
-extern boolean serverMode;
 extern boolean noMenu;
+extern int brogueFontSize;
+extern char dataDirectory[];
+
+// defined in brogue
+extern playerCharacter rogue;
 
