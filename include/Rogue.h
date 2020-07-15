@@ -272,6 +272,7 @@ enum displayGlyph {
     G_BEDROLL,
     G_BLOODWORT_POD,
     G_EASY,
+    G_HOLE,
 };
 
 enum eventTypes {
