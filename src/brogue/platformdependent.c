@@ -117,7 +117,7 @@ unsigned int glyphToUnicode(enum displayGlyph glyph) {
         case G_ALTAR: return '|';
         case G_LIQUID: return '~';
         case G_FLOOR: return U_MIDDLE_DOT;
-        case G_CHASM: return U_FOUR_DOTS;
+        case G_HOLE: case G_CHASM: return U_FOUR_DOTS;
         case G_TRAP: return U_DIAMOND;
         case G_FIRE: return U_FLIPPED_V;
         case G_FOLIAGE: return U_ARIES;
