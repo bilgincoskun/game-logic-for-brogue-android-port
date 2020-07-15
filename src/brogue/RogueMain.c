@@ -1238,7 +1238,7 @@ void enableEasyMode() {
 	if (confirm("Succumb to demonic temptation (i.e. enable Easy Mode)?", false)) {
 		recordKeystroke(EASY_MODE_KEY, false, true);
 		message("An ancient and terrible evil burrows into your willing flesh!", true);
-		player.info.displayChar = '&';
+		player.info.displayChar = G_EASY;
 		rogue.easyMode = true;
 		refreshDungeonCell(player.xLoc, player.yLoc);
 		refreshSideBar(-1, -1, false);

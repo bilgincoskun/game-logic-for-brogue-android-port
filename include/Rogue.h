@@ -271,7 +271,8 @@ enum displayGlyph {
     G_ELECTRIC_CRYSTAL,
     G_ASHES,
     G_BEDROLL,
-    G_BLOODWORT_POD
+    G_BLOODWORT_POD,
+    G_EASY,
 };
 
 enum eventTypes {
