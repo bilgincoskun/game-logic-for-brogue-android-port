@@ -148,12 +148,11 @@
 // display characters:
 
 enum displayGlyph {
-    G_UP_ARROW = 128,
+    G_UP_ARROW = 256,
     G_DOWN_ARROW,
     G_POTION,
     G_GRASS,
     G_WALL,
-    G_DEMON,
     G_OPEN_DOOR,
     G_GOLD,
     G_CLOSED_DOOR,
