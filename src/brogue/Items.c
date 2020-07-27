@@ -2791,10 +2791,10 @@ char displayInventory(unsigned short categoryMask,
                 buttons[i].symbol[0] = '-';
                 magicEscapePtr = yellowColorEscapeSequence;
             } else if (polarity == 1) {
-                buttons[i].symbol[0] = G_GOOD_MAGIC;
+                buttons[i].symbol[0] = G_GOOD_ITEM;
                 magicEscapePtr = goodColorEscapeSequence;
             } else {
-                buttons[i].symbol[0] = G_BAD_MAGIC;
+                buttons[i].symbol[0] = G_BAD_ITEM;
                 magicEscapePtr = badColorEscapeSequence;
             }
 
