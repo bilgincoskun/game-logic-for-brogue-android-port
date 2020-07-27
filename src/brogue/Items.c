@@ -2740,10 +2740,23 @@ char displayInventory(unsigned short categoryMask,
 		if ((theItem->flags & ITEM_MAGIC_DETECTED)
 			&& !(theItem->category & AMULET)) { // Won't include food, keys, lumenstones or amulet.
             
-			buttons[i].symbol[0] = (itemMagicChar(theItem) ? itemMagicChar(theItem) : '-');
+            switch(itemMagicChar(theItem)){
+                case G_GOOD_MAGIC:
+                    buttons[i].symbol[0] = G_GOOD_ITEM;
+                    break;
+                case G_BAD_MAGIC:
+                    buttons[i].symbol[0] = G_BAD_ITEM;
+                    break;
+                case G_AMULET:
+                    buttons[i].symbol[0] = G_AMULET_ITEM;
+                    break;
+                default:
+                    buttons[i].symbol[0] = '-';
+                    break;
+            }
 			if (buttons[i].symbol[0] == '-') {
 				magicEscapePtr = yellowColorEscapeSequence;
-			} else if (buttons[i].symbol[0] == G_GOOD_MAGIC) {
+			} else if (buttons[i].symbol[0] == G_GOOD_ITEM) {
 				magicEscapePtr = goodColorEscapeSequence;
 			} else {
 				magicEscapePtr = badColorEscapeSequence;

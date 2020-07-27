@@ -284,6 +284,9 @@ enum displayGlyph {
     G_PRESSURE_PLATE_INACTIVE,
     G_GLOWING_GLYPH,
     G_SACRED_GLYPH,
+    G_GOOD_ITEM,
+    G_BAD_ITEM,
+    G_AMULET_ITEM,
 };
 
 enum eventTypes {
