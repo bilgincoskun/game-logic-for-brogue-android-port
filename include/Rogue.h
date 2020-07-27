@@ -282,6 +282,8 @@ enum displayGlyph {
     G_TRAP_ALARM,
     G_PRESSURE_PLATE,
     G_PRESSURE_PLATE_INACTIVE,
+    G_GLOWING_GLYPH,
+    G_SACRED_GLYPH,
 };
 
 enum eventTypes {
