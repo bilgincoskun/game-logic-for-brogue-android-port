@@ -281,6 +281,15 @@ enum displayGlyph {
     G_BLOODWORT_POD,
     G_EASY,
     G_HOLE,
+    G_TRAP_GAS,
+    G_TRAP_PARALYSIS,
+    G_TRAP_CONFUSION,
+    G_TRAP_FIRE,
+    G_TRAP_FLOOD,
+    G_TRAP_NET,
+    G_TRAP_ALARM,
+    G_PRESSURE_PLATE,
+    G_PRESSURE_PLATE_INACTIVE,
 };
 
 enum eventTypes {
