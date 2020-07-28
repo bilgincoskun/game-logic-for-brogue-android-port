@@ -287,6 +287,8 @@ enum displayGlyph {
     G_GOOD_ITEM,
     G_BAD_ITEM,
     G_AMULET_ITEM,
+    G_NET,
+    G_VINE,
 };
 
 enum eventTypes {
