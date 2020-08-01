@@ -298,6 +298,7 @@ enum displayGlyph {
     G_NET,
     G_VINE,
     G_FALLEN_TORCH,
+    G_CRYSTAL_WALL,
 };
 
 enum eventTypes {
