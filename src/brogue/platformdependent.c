@@ -158,7 +158,7 @@ unsigned int glyphToUnicode(enum displayGlyph glyph) {
         case G_CLOSED_IRON_DOOR: return '+';
         case G_OPEN_IRON_DOOR: return '\'';
         case G_TORCH: return '#';
-        case G_CRYSTAL: return '#';
+        case G_CRYSTAL_WALL: case G_CRYSTAL: return '#';
         case G_PORTCULLIS: return '#';
         case G_BARRICADE: return '#';
         case G_STATUE: return U_ESZETT;
