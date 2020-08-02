@@ -28,6 +28,7 @@ struct brogueConsole {
 	void (*plotChar)(enum displayGlyph, short, short, short, short, short, short, short, short);
 	void (*remap)(const char *, const char *);
 	boolean (*modifierHeld)(int modifier);
+	boolean (*setGraphicsEnabled)(boolean);
 };
 
 void loadKeymap();

@@ -317,10 +317,22 @@ short actionMenu(short x, boolean playingBack) {
         buttons[buttonCount].hotkey[0] = AGGRO_DISPLAY_KEY;
         takeActionOurselves[buttonCount] = true;
         buttonCount++;
+
+        if (hasGraphics) {
+            if (KEYBOARD_LABELS) {
+                sprintf(buttons[buttonCount].text, "  %sG: %s[%s] Enable graphics  ", yellowColorEscape, whiteColorEscape, graphicsEnabled ? "X" : " ");
+            } else {
+                sprintf(buttons[buttonCount].text, "  [%s] Enable graphics  ",   graphicsEnabled ? "X" : " ");
+            }
+            buttons[buttonCount].hotkey[0] = GRAPHICS_KEY;
+            takeActionOurselves[buttonCount] = true;
+            buttonCount++;
+        }
+
         sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
         buttons[buttonCount].flags &= ~B_ENABLED;
         buttonCount++;
-        
+
         if (KEYBOARD_LABELS) {
             sprintf(buttons[buttonCount].text, "  %sD: %sDiscovered items  ",	yellowColorEscape, whiteColorEscape);
         } else {
@@ -2586,6 +2598,18 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
 				gameOver("Quit", true);
 			}
 			break;
+		case GRAPHICS_KEY:
+		    if (hasGraphics) {
+		        graphicsEnabled = setGraphicsEnabled(!graphicsEnabled);
+		        if (graphicsEnabled) {
+		            messageWithColor(KEYBOARD_LABELS ? "Enabled graphical tiles. Press 'G' again to disable." : "Enable graphical tiles.",
+		                    &teal, false);
+		        } else {
+		            messageWithColor(KEYBOARD_LABELS ? "Disabled graphical tiles. Press 'G' again to enable." : "Disabled graphical tiles.",
+		                    &teal, false);
+		        }
+		    }
+		    break;
 		case SEED_KEY:
 			/*DEBUG {
 				cellDisplayBuffer dbuf[COLS][ROWS];
@@ -3706,6 +3730,7 @@ void printHelpScreen() {
 		"             x  ****auto-explore (control-x: fast forward)",
 		"             A  ****autopilot (control-A: fast forward)",
 		"             M  ****display old messages",
+		"             G  ****toggle graphical tiles (when available)",
         "",
 		"             S  ****suspend game and quit",
 		"             O  ****open saved game",
