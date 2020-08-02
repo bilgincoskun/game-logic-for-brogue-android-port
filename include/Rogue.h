@@ -1122,6 +1122,7 @@ enum tileFlags {
 #define LOAD_SAVED_GAME_KEY	'O'
 #define SAVE_GAME_KEY		'S'
 #define NEW_GAME_KEY		'N'
+#define GRAPHICS_KEY        'G'
 #define NUMPAD_0			48
 #define NUMPAD_1			49
 #define NUMPAD_2			50
@@ -2570,6 +2571,9 @@ typedef struct buttonState {
 	cellDisplayBuffer dbuf[COLS][ROWS]; // Where buttons are drawn.
 	cellDisplayBuffer rbuf[COLS][ROWS]; // Reversion screen state.
 } buttonState;
+
+extern boolean graphicsEnabled;
+extern boolean hasGraphics;
 
 #if defined __cplusplus
 extern "C" {
