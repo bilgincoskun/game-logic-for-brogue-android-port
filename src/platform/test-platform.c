@@ -10,6 +10,10 @@
 
 extern playerCharacter rogue;
 
+boolean hasGraphics = false;
+boolean graphicsEnabled = false;
+
+
 static void gameLoop() {
 	signal(SIGINT, SIG_DFL); // keep SDL from overriding the default ^C handler when it's linked
 
