@@ -10,6 +10,10 @@
 
 extern playerCharacter rogue;
 
+boolean hasGraphics = false;
+boolean graphicsEnabled = false;
+
+
 static void gameLoop() {
 	signal(SIGINT, SIG_DFL); // keep SDL from overriding the default ^C handler when it's linked
 
@@ -33,7 +37,7 @@ unsigned int glyphToUnicode(enum displayGlyph glyph) {
         case G_POTION: return '!';
         case G_GRASS: return '"';
         case G_WALL: return '#';
-        case G_DEMON: return '&';
+        case G_EASY: return '&';
         case G_OPEN_DOOR: return '\'';
         case G_GOLD: return '*';
         case G_CLOSED_DOOR: return '+';

@@ -27,9 +27,6 @@
 #include "Rogue.h"
 #include "IncludeGlobals.h"
 
-boolean hasGraphics = false;
-boolean graphicsEnabled = false;
-
 // Populates path[][] with a list of coordinates starting at origin and traversing down the map. Returns the number of steps in the path.
 short getPlayerPathOnMap(short path[1000][2], short **map, short originX, short originY) {
     short dir, x, y, steps;
