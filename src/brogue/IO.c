@@ -1191,7 +1191,7 @@ void getCellAppearance(short x, short y, enum displayGlyph *returnChar, color *r
 			if (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience) {
 				cellChar = (rand_range(0, 1) ? 'X' : 'x');
 			} else {
-                cellChar = monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].displayChar;
+                cellChar = (monst->info.isLarge ? 'X' : 'x');
 			}
 			cellForeColor = white;
 			lightMultiplierColor = white;
