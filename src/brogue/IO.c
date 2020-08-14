@@ -2782,6 +2782,7 @@ boolean getInputTextString(char *inputText,
     char keystroke, suffix[100];
     const short textEntryBounds[TEXT_INPUT_TYPES][2] = {{' ', '~'}, {' ', '~'}, {'0', '9'}};
     cellDisplayBuffer dbuf[COLS][ROWS], rbuf[COLS][ROWS];
+    textInputStart();
 
     // x and y mark the origin for text entry.
     if (useDialogBox) {
@@ -2875,6 +2876,8 @@ boolean getInputTextString(char *inputText,
 
     inputText[charNum] = '\0';
 
+    textInputStop();
+	
     if (keystroke == ESCAPE_KEY) {
         return false;
     }

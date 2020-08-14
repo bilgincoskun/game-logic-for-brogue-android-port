@@ -271,6 +271,14 @@ enum graphicsModes setGraphicsMode(enum graphicsModes mode) {
     }
 }
 
+void textInputStart(){
+    currentConsole.textInputStart();
+}
+
+void textInputStop(){
+    currentConsole.textInputStop();
+}
+
 // creates an empty high scores file
 void initScores() {
     short i;
