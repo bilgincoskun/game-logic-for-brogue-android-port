@@ -48,3 +48,5 @@ extern struct brogueConsole currentConsole;
 extern boolean serverMode;
 extern boolean noMenu;
 
+extern gameStatus gameStat;
+
