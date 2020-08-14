@@ -279,6 +279,8 @@ void titleMenu() {
 
     cellDisplayBuffer shadowBuf[COLS][ROWS];
 
+    gameStat.titleMenuShown = true;
+
     // Initialize the RNG so the flames aren't always the same.
 
     seedRandomGenerator(0);
@@ -390,6 +392,7 @@ void titleMenu() {
             rogue.nextGame = buttonCommands[button];
         }
     }
+    gameStat.titleMenuShown = false;
 }
 
 void dialogAlert(char *message) {
@@ -451,6 +454,8 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
     color *dialogColor = &interfaceBoxColor;
     char *membuf;
     char fileDate [11];
+
+	gameStat.fileDialogShown = true;
 
     suffixLength = strlen(suffix);
     files = listFiles(&count, &membuf);
@@ -608,6 +613,8 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
 
     free(files);
     free(membuf);
+
+	gameStat.fileDialogShown = false;
 
     if (count == 0) {
         dialogAlert("No applicable files found.");
