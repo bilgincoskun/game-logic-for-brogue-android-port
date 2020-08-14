@@ -83,6 +83,8 @@ struct brogueConsole {
     very start of the program, even before .gameLoop, to set the initial value.
     */
     boolean (*setGraphicsEnabled)(boolean);
+    void (*textInputStart)(void);
+    void (*textInputStop)(void);
 };
 
 // defined in platform

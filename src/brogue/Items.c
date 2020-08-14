@@ -5846,6 +5846,7 @@ void relabel(item *theItem) {
         return;
     }
     temporaryMessage("New letter? (a-z)", false);
+    textInputStart();
     newLabel = '\0';
     do {
         newLabel = nextKeyPress(true);
@@ -5861,7 +5862,6 @@ void relabel(item *theItem) {
             command[2] = newLabel;
             command[3] = '\0';
             recordKeystrokeSequence(command);
-
             oldItem = itemOfPackLetter(newLabel);
             if (oldItem) {
                 oldItem->inventoryLetter = theItem->inventoryLetter;
@@ -5885,6 +5885,7 @@ void relabel(item *theItem) {
         sprintf(buf, "Entered label is not a letter");
         messageWithColor(buf, &itemMessageColor, false);
     }
+    textInputStop();
 }
 
 // If the blink trajectory lands in lava based on the player's knowledge, abort.

@@ -88,6 +88,14 @@ boolean setGraphicsEnabled(boolean state) {
     }
 }
 
+void textInputStart(){
+    currentConsole.textInputStart();
+}
+
+void textInputStop(){
+    currentConsole.textInputStop();
+}
+
 // creates an empty high scores file
 void initScores() {
     short i;
