@@ -195,6 +195,8 @@ short actionMenu(short x, boolean playingBack) {
 	encodeMessageColor(whiteColorEscape, 0, &white);
 	encodeMessageColor(darkGrayColorEscape, 0, &black);
 	
+    gameStat.menuShown = true;
+
     do {
         for (i=0; i<ROWS; i++) {
             initializeButton(&(buttons[i]));
@@ -389,6 +391,7 @@ short actionMenu(short x, boolean playingBack) {
         buttonChosen = buttonInputLoop(buttons, buttonCount, x - 1, y, longestName + 2, buttonCount, NULL);
         overlayDisplayBuffer(rbuf, NULL);
         if (buttonChosen == -1) {
+            gameStat.menuShown = false;
             return -1;
         } else if (takeActionOurselves[buttonChosen]) {
             
@@ -398,10 +401,13 @@ short actionMenu(short x, boolean playingBack) {
             theEvent.shiftKey = theEvent.controlKey = false;
             executeEvent(&theEvent);
         } else {
+            gameStat.menuShown = false;
             return buttons[buttonChosen].hotkey[0];
         }
     } while (takeActionOurselves[buttonChosen]);
     brogueAssert(false);
+    gameStat.menuShown = false;
+    return -1;
 }
 
 #define MAX_MENU_BUTTON_COUNT 5
@@ -2865,8 +2871,10 @@ boolean confirm(char *prompt, boolean alsoDuringPlayback) {
 	cellDisplayBuffer rbuf[COLS][ROWS];
 	char whiteColorEscape[20] = "";
 	char yellowColorEscape[20] = "";
+    gameStat.confirmShown = true;
 	
 	if (rogue.autoPlayingLevel || (!alsoDuringPlayback && rogue.playbackMode)) {
+        gameStat.confirmShown = false;
 		return true; // oh yes he did
 	}
 	
@@ -2892,6 +2900,7 @@ boolean confirm(char *prompt, boolean alsoDuringPlayback) {
 	retVal = printTextBox(prompt, COLS/3, ROWS/3, COLS/3, &white, &interfaceBoxColor, rbuf, buttons, 2);
 	overlayDisplayBuffer(rbuf, NULL);
 	
+    gameStat.confirmShown = false;
 	if (retVal == -1 || retVal == 1) { // If they canceled or pressed no.
 		return false;
 	} else {
@@ -2947,6 +2956,7 @@ void displayMessageArchive() {
 	short i, j, k, reverse, fadePercent, totalMessageCount, currentMessageCount;
 	boolean fastForward;
 	cellDisplayBuffer dbuf[COLS][ROWS], rbuf[COLS][ROWS];
+    gameStat.messageArchiveShown = true;
 	
 	// Count the number of lines in the archive.
 	for (totalMessageCount=0;
@@ -3004,6 +3014,7 @@ void displayMessageArchive() {
 		updateFlavorText();
 		confirmMessages();
 		updateMessageDisplay();
+        gameStat.messageArchiveShown = false;
 	}
 }
 
@@ -4221,6 +4232,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	};
 	
 	if (y >= ROWS - 1) {
+        gameStat.leftPanelLength = ROWS - 1;
 		return ROWS - 1;
 	}
 	
@@ -4478,6 +4490,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	}
 	
 	restoreRNG;
+    gameStat.leftPanelLength = y;
 	return y;
 }
 

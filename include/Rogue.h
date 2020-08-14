@@ -2318,6 +2318,16 @@ typedef struct levelData {
 	unsigned long awaySince;
 } levelData;
 
+typedef struct gameStatus{
+    boolean titleMenuShown;
+    boolean fileDialogShown;
+    boolean messageArchiveShown;
+    boolean inventoryShown;
+    boolean menuShown;
+    boolean confirmShown;
+    short leftPanelLength;
+} gameStatus;
+
 enum machineFeatureFlags {
 	MF_GENERATE_ITEM				= Fl(0),	// feature entails generating an item (overridden if the machine is adopting an item)
 	MF_OUTSOURCE_ITEM_TO_MACHINE	= Fl(1),	// item must be adopted by another machine
