@@ -2685,6 +2685,8 @@ char displayInventory(unsigned short categoryMask,
     badColorEscapeSequence[20];
     char *magicEscapePtr;
 
+    gameStat.inventoryShown = true;
+
     assureCosmeticRNG;
 
     clearCursorPath();
@@ -2709,6 +2711,7 @@ char displayInventory(unsigned short categoryMask,
         confirmMessages();
         message("Your pack is empty!", 0);
         restoreRNG;
+        gameStat.inventoryShown = false;
         return 0;
     }
 
@@ -2836,6 +2839,7 @@ char displayInventory(unsigned short categoryMask,
         confirmMessages();
         message("Nothing of that type!", 0);
         restoreRNG;
+        gameStat.inventoryShown = false;
         return 0;
     }
     if (waitForAcknowledge) {
@@ -3004,6 +3008,7 @@ char displayInventory(unsigned short categoryMask,
                     } else if (actionKey > -1) {
                         // Player took an action directly from the item screen; we're done here.
                         restoreRNG;
+                        gameStat.inventoryShown = false;
                         return 0;
                     }
                 }
@@ -3014,6 +3019,7 @@ char displayInventory(unsigned short categoryMask,
     overlayDisplayBuffer(rbuf, NULL); // restore the original screen
 
     restoreRNG;
+    gameStat.inventoryShown = false;
     return theKey;
 }
 
