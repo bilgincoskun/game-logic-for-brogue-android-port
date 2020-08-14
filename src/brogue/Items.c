@@ -6072,6 +6072,7 @@ void relabel(item *theItem) {
         return;
     }
     temporaryMessage("New letter? (a-z)", 0);
+    textInputStart();
     newLabel = '\0';
     do {
         newLabel = nextKeyPress(true);
@@ -6087,7 +6088,6 @@ void relabel(item *theItem) {
             command[2] = newLabel;
             command[3] = '\0';
             recordKeystrokeSequence(command);
-
             oldItem = itemOfPackLetter(newLabel);
             if (oldItem) {
                 oldItem->inventoryLetter = theItem->inventoryLetter;
@@ -6108,6 +6108,7 @@ void relabel(item *theItem) {
             messageWithColor(buf, &itemMessageColor, 0);
         }
     }
+    textInputStop();
 }
 
 // If the most recently equipped item caused another item to be unequiped, is

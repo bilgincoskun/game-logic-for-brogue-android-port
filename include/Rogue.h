@@ -2759,6 +2759,8 @@ extern "C" {
     void notifyEvent(short eventId, int data1, int data2, const char *str1, const char *str2);
     boolean takeScreenshot();
     enum graphicsModes setGraphicsMode(enum graphicsModes mode);
+    void textInputStart();
+    void textInputStop();
     boolean controlKeyIsDown();
     boolean shiftKeyIsDown();
     short getHighScoresList(rogueHighScoresEntry returnList[HIGH_SCORES_COUNT]);
