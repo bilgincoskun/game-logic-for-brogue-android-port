@@ -37,6 +37,7 @@ short numberOfWaypoints;
 levelData *levels;
 creature player;
 playerCharacter rogue;
+gameStatus gameStat;
 creatureList *monsters;
 creatureList *dormantMonsters;
 creatureList graveyard;
