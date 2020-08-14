@@ -6232,6 +6232,9 @@ void relabel(item *theItem) {
                     theItem->inventoryLetter);
             messageWithColor(buf, &itemMessageColor, 0);
         }
+    }else{
+        sprintf(buf, "Entered label is not a letter");
+        messageWithColor(buf, &itemMessageColor, false);
     }
     textInputStop();
 }
