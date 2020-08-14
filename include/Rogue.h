@@ -2647,6 +2647,8 @@ extern "C" {
     boolean isApplicationActive();
 	void nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput, boolean colorsDance);
     boolean setGraphicsEnabled(boolean);
+    void textInputStart();
+    void textInputStop();
 	boolean controlKeyIsDown();
 	boolean shiftKeyIsDown();
 	short getHighScoresList(rogueHighScoresEntry returnList[HIGH_SCORES_COUNT]);

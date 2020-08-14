@@ -30,6 +30,8 @@ struct brogueConsole {
 	void (*remap)(const char *, const char *);
 	boolean (*modifierHeld)(int modifier);
 	boolean (*setGraphicsEnabled)(boolean);
+    void (*textInputStart)(void);
+    void (*textInputStop)(void);
 };
 
 void loadKeymap();
