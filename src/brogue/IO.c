@@ -30,12 +30,12 @@
 // Populates path[][] with a list of coordinates starting at origin and traversing down the map. Returns the number of steps in the path.
 short getPlayerPathOnMap(short path[1000][2], short **map, short originX, short originY) {
 	short dir, x, y, steps;
-	
+
 	x = originX;
 	y = originY;
-	
+
 	dir = 0;
-	
+
 	for (steps = 0; dir != -1;) {
 		dir = nextStep(map, x, y, &player, false);
 		if (dir != -1) {
@@ -2665,6 +2665,7 @@ boolean getInputTextString(char *inputText,
 	char keystroke, suffix[100];
 	const short textEntryBounds[TEXT_INPUT_TYPES][2] = {{' ', '~'}, {' ', '~'}, {'0', '9'}};
 	cellDisplayBuffer dbuf[COLS][ROWS], rbuf[COLS][ROWS];
+    textInputStart();
 	
 	// x and y mark the origin for text entry.
 	if (useDialogBox) {
@@ -2755,6 +2756,8 @@ boolean getInputTextString(char *inputText,
 	}
 	
 	inputText[charNum] = '\0';
+
+    textInputStop();
 	
 	if (keystroke == ESCAPE_KEY) {
 		return false;
