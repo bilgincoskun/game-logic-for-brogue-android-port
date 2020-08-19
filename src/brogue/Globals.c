@@ -552,7 +552,8 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
     {G_FLOOR,    &black,                 &lightBlue,             35, 100,DF_DEEP_WATER_THAW, 0,      DF_DEEP_WATER_THAW, 10000,      NO_LIGHT,       (T_IS_FLAMMABLE), (TM_VANISHES_UPON_PROMOTION),                                                     "melting ice",          "cracks extend across the surface of the ice as it melts before your eyes."},
     {G_FLOOR,    &white,                 &lightBlue,             35, 100,DF_SHALLOW_WATER_THAW, 0,   DF_SHALLOW_WATER_MELTING, -100, NO_LIGHT,       (T_IS_FLAMMABLE), (TM_VANISHES_UPON_PROMOTION),                                                     "ice",                  "a sheet of ice extends into the water, ripples frozen into its glossy surface."},
     {G_FLOOR,    &black,                 &lightBlue,             35, 100,DF_DEEP_WATER_THAW, 0,      DF_SHALLOW_WATER_THAW, 10000,   NO_LIGHT,       (T_IS_FLAMMABLE), (TM_VANISHES_UPON_PROMOTION),                                                     "melting ice",          "cracks extend across the surface of the ice as it melts before your eyes."},
-	// surface layer
+
+    // surface layer
     {G_HOLE,    &chasmForeColor,        &black,                 9,  0,  DF_PLAIN_FIRE,  0,          DF_HOLE_DRAIN,  -1000,          NO_LIGHT,       (T_AUTO_DESCENT), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "a hole",               "you plunge downward into the hole!"},
     {G_HOLE,    &chasmForeColor,        &black,                 9,  0,  DF_PLAIN_FIRE,  0,          DF_HOLE_DRAIN,  -1000,          DESCENT_LIGHT,  (T_AUTO_DESCENT), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "a hole",               "you plunge downward into the hole!"},
     {G_FLOOR,    &white,                 &chasmEdgeBackColor,    50, 0,  DF_PLAIN_FIRE,  0,          0,              -500,           NO_LIGHT,       (0), (TM_VANISHES_UPON_PROMOTION),                                                                  "translucent ground",   "chilly gusts of air blow upward through the translucent floor."},
@@ -1128,7 +1129,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
     {{1, 12},           {30, 50},   30,     6,          0,                  (BP_ROOM | BP_PURGE_INTERIOR | BP_SURROUND_WITH_WALLS | BP_OPEN_INTERIOR | BP_IMPREGNABLE | BP_REWARD), {
         {0,         CARPET,     DUNGEON,        {0,0},      0,          0,          -1,         0,              0,              0,          0,          (MF_EVERYWHERE)},
         {0,         0,          0,              {1,1},      1,          0,          0,          0,              2,              0,          0,          (MF_BUILD_AT_ORIGIN | MF_PERMIT_BLOCKING | MF_BUILD_VESTIBULE)},
-        {0,         ALTAR_CAGE_OPEN,DUNGEON,    {1,1},      1,          WAND,       WAND_EMPOWERMENT, 0,        2,              0,          (ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS), (MF_GENERATE_ITEM | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
+        {0,         ALTAR_CAGE_OPEN,DUNGEON,    {1,1},      1,          WAND,       -1,         0,              2,              0,          (ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS), (MF_GENERATE_ITEM | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
         {0,         ALTAR_CAGE_OPEN,DUNGEON,    {3,3},      3,          (WEAPON|ARMOR|WAND),-1, 0,              2,              0,          (ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS), (MF_GENERATE_ITEM | MF_NO_THROWING_WEAPONS | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
         {0,         ALTAR_CAGE_OPEN,DUNGEON,    {2,3},      2,          (STAFF|RING|CHARM),-1,  0,              2,              0,          (ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_MAX_CHARGES_KNOWN | ITEM_PLAYER_AVOIDS),    (MF_GENERATE_ITEM | MF_NO_THROWING_WEAPONS | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
         {0,         STATUE_INERT,DUNGEON,       {2,3},      0,          0,          -1,         0,              2,              0,          0,          (MF_TREAT_AS_BLOCKING | MF_BUILD_IN_WALLS | MF_IMPREGNABLE)}}},
@@ -2175,7 +2176,7 @@ const monsterClass monsterClassCatalog[MONSTER_CLASS_COUNT] = {
     {"jelly",           10,         15,         {MK_PINK_JELLY, MK_BLACK_JELLY, MK_ACID_JELLY}},
     {"turret",          5,          18,         {MK_ARROW_TURRET, MK_SPARK_TURRET, MK_DART_TURRET, MK_FLAME_TURRET}},
     {"infernal",        10,         -1,         {MK_FLAMEDANCER, MK_IMP, MK_REVENANT, MK_FURY, MK_PHANTOM, MK_IFRIT}},
-    {"mage",            10,         -1,         {MK_GOBLIN_CONJURER, MK_GOBLIN_MYSTIC, MK_OGRE_SHAMAN, MK_DAR_BATTLEMAGE, MK_PIXIE, MK_LICH}},
+    {"mage",            10,         -1,         {MK_GOBLIN_CONJURER, MK_GOBLIN_MYSTIC, MK_OGRE_SHAMAN, MK_DAR_PRIESTESS, MK_DAR_BATTLEMAGE, MK_PIXIE, MK_LICH}},
     {"waterborne",      10,         17,         {MK_EEL, MK_NAGA, MK_KRAKEN}},
     {"airborne",        10,         15,         {MK_VAMPIRE_BAT, MK_WILL_O_THE_WISP, MK_PIXIE, MK_PHANTOM, MK_FURY, MK_IFRIT, MK_PHOENIX}},
     {"fireborne",       10,         12,         {MK_WILL_O_THE_WISP, MK_SALAMANDER, MK_FLAMEDANCER, MK_PHOENIX}},
