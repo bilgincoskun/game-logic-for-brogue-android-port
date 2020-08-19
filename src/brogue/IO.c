@@ -4434,8 +4434,10 @@ void printHighScores(boolean hiliteMostRecent) {
     scoreColor = black;
     applyColorAverage(&scoreColor, &goodMessageColor, 100);
 
-    printString(KEYBOARD_LABELS ? "Press space to continue." : "Touch anywhere to continue.",
-                (COLS - strLenWithoutEscapes(KEYBOARD_LABELS ? "Press space to continue." : "Touch anywhere to continue.")) / 2,
+    char highScoreMessage[] = "Touch anywhere to continue.";
+    
+	printString(highScoreMessage,
+                (COLS - strLenWithoutEscapes(highScoreMessage)) / 2,
                 ROWS - 1, &scoreColor, &black, 0);
 
     commitDraws();
