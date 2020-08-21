@@ -2434,7 +2434,7 @@ typedef struct gameStatus{
     boolean inventoryShown;
     boolean menuShown;
     boolean confirmShown;
-    short leftPanelLength;
+    short sideBarLength;
 } gameStatus;
 
 enum machineFeatureFlags {
