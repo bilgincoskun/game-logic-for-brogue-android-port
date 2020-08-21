@@ -3354,6 +3354,7 @@ void refreshSideBar(short focusX, short focusY, boolean focusedEntityMustGoFirst
 	boolean gotFocusedEntityOnScreen = (focusX >= 0 ? false : true);
 	char addedEntity[DCOLS][DROWS];
     short oldRNG;
+    gameStat.sideBarLength = 0;
 	
 	if (rogue.gameHasEnded || rogue.playbackFastForward) {
 		return;
@@ -3539,7 +3540,9 @@ void refreshSideBar(short focusX, short focusY, boolean focusedEntityMustGoFirst
 			rogue.sidebarLocationList[j][1] = y;
 		}
 	}
-	
+
+    gameStat.sideBarLength = printY;
+
 	if (gotFocusedEntityOnScreen) {
 		// Wrap things up.
 		for (i=printY; i< ROWS - 1; i++) {
@@ -4234,7 +4237,6 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	};
 	
 	if (y >= ROWS - 1) {
-        gameStat.leftPanelLength = ROWS - 1;
 		return ROWS - 1;
 	}
 	
@@ -4492,7 +4494,6 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	}
 	
 	restoreRNG;
-    gameStat.leftPanelLength = y;
 	return y;
 }
 
