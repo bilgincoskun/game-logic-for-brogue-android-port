@@ -6723,6 +6723,14 @@ void readScroll(item *theItem) {
                 theItem = promptForItemOfType((ALL_ITEMS), ITEM_CAN_BE_IDENTIFIED, 0,
                                               KEYBOARD_LABELS ? "Identify what? (a-z; shift for more info)" : "Identify what?",
                                               false);
+				if(theItem){
+					char confirmBuffer[DCOLS];
+					sprintf(confirmBuffer,"Identify selected item (%c)?",theItem->inventoryLetter);
+					if(!confirm(confirmBuffer,false)){
+						theItem = NULL;
+						continue;
+					}
+				}
                 if (rogue.gameHasEnded) {
                     return;
                 }
