@@ -6489,6 +6489,14 @@ void readScroll(item *theItem) {
 				theItem = promptForItemOfType((WEAPON | ARMOR | RING | STAFF | WAND | CHARM), 0, 0,
 											  KEYBOARD_LABELS ? "Enchant what? (a-z; shift for more info)" : "Enchant what?",
                                               false);
+				if(theItem){
+					char confirmBuffer[DCOLS];
+					sprintf(confirmBuffer,"Enchant selected item (%c)?",theItem->inventoryLetter);
+					if(!confirm(confirmBuffer,false)){
+						theItem = NULL;
+						continue;
+					}
+				}
 				confirmMessages();
 				if (theItem == NULL || !(theItem->category & (WEAPON | ARMOR | RING | STAFF | WAND | CHARM))) {
 					message("Can't enchant that.", true);
