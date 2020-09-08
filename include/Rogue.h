@@ -21,6 +21,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#ifndef _rogue_h_
+#define _rogue_h_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -3195,4 +3198,6 @@ extern "C" {
 	
 #if defined __cplusplus
 }
+#endif
+
 #endif

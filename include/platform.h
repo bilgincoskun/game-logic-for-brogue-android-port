@@ -1,3 +1,6 @@
+#ifndef _platform_h_
+#define _platform_h_
+
 #include "Rogue.h"
 
 #define U_MIDDLE_DOT  0x00b7
@@ -50,3 +53,4 @@ extern boolean noMenu;
 
 extern gameStatus gameStat;
 
+#endif
