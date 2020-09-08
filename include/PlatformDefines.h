@@ -24,6 +24,10 @@
 // Any platform-dependent defines that must be accessible in the game code
 // should go in here.
 
+#ifndef _platformdefines_h_
+#define _platformdefines_h_
+
 #define BROGUE_LIBTCOD
 #define PLAY_AGAIN_STRING	"Press space to play again."
 
+#endif
