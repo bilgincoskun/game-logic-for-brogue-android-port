@@ -851,6 +851,11 @@ creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFla
         leader->info.intrinsicLightType = SACRIFICE_MARK_LIGHT;
     }
 
+    if (rogue.patchVersion >= 3 && (theHorde->flags & HORDE_MACHINE_THIEF)) {
+        leader->safetyMap = allocGrid(); // Keep thieves from fleeing before they see the player
+        fillGrid(leader->safetyMap, 0);
+    }
+
     preexistingMonst = monsterAtLoc(x, y);
     if (preexistingMonst) {
         killCreature(preexistingMonst, true); // If there's already a monster here, quietly bury the body.
@@ -2021,7 +2026,9 @@ void pathTowardCreature(creature *monst, creature *target) {
     if (dir == NO_DIRECTION) {
         dir = randValidDirectionFrom(monst, monst->xLoc, monst->yLoc, true);
     }
-
+    if (dir == NO_DIRECTION) {
+        return; // monster is blocked
+    }
     targetLoc[0] = monst->xLoc + nbDirs[dir][0];
     targetLoc[1] = monst->yLoc + nbDirs[dir][1];
 
@@ -2340,6 +2347,17 @@ boolean monsterSummons(creature *monst, boolean alwaysUse) {
 boolean generallyValidBoltTarget(creature *caster, creature *target) {
     if (caster == target) {
         // Can't target yourself; that's the fundamental theorem of Brogue bolts.
+        return false;
+    }
+    if (rogue.patchVersion >= 3
+        && caster->status[STATUS_DISCORDANT]
+        && caster->creatureState == MONSTER_WANDERING
+        && target == &player) {
+        // Discordant monsters always try to cast spells regardless of whether
+        // they're hunting the player, so that they cast at other monsters. This
+        // by bypasses the usual awareness checks, so the player and any allies
+        // can be hit when far away. Hence, we don't target the player with
+        // bolts if we're discordant and wandering.
         return false;
     }
     if (monsterIsHidden(target, caster)
@@ -3258,6 +3276,9 @@ void monstersTurn(creature *monst) {
             dir = nextStep(safetyMap, monst->xLoc, monst->yLoc, NULL, true);
         } else {
             if (!monst->safetyMap) {
+                if (rogue.patchVersion >= 3 && !rogue.updatedSafetyMapThisTurn) {
+                    updateSafetyMap();
+                }
                 monst->safetyMap = allocGrid();
                 copyGrid(monst->safetyMap, safetyMap);
             }
@@ -3843,8 +3864,13 @@ void demoteMonsterFromLeadership(creature *monst) {
         freeGrid(monst->mapToMe);
         monst->mapToMe = NULL;
     }
-    for (follower = monsters->nextCreature; follower != NULL; follower = follower->nextCreature) {
-        if (follower->leader == monst && monst != follower) {
+
+    for (int level = 0; level <= DEEPEST_LEVEL; level++) {
+        if (rogue.patchVersion < 1 && level > 0) break; // to play back 1.9.0 recordings, skip other levels
+        // we'll work on this level's monsters first, so that the new leader is preferably on the same level
+        creature *firstMonster = (level == 0 ? monsters->nextCreature : levels[level-1].monsters);
+        for (follower = firstMonster; follower != NULL; follower = follower->nextCreature) {
+            if (follower == monst || follower->leader != monst) continue;
             if (follower->bookkeepingFlags & MB_BOUND_TO_LEADER) {
                 // gonna die in playerTurnEnded().
                 follower->leader = NULL;
@@ -3864,12 +3890,17 @@ void demoteMonsterFromLeadership(creature *monst) {
             }
         }
     }
+
     if (newLeader
         && !atLeastOneNewFollower) {
         newLeader->bookkeepingFlags &= ~MB_LEADER;
     }
-    for (follower = dormantMonsters->nextCreature; follower != NULL; follower = follower->nextCreature) {
-        if (follower->leader == monst && monst != follower) {
+
+    for (int level = 0; level <= DEEPEST_LEVEL; level++) {
+        if (rogue.patchVersion < 1 && level > 0) break;
+        creature *firstMonster = (level == 0 ? dormantMonsters->nextCreature : levels[level-1].dormantMonsters);
+        for (follower = firstMonster; follower != NULL; follower = follower->nextCreature) {
+            if (follower == monst || follower->leader != monst) continue;
             follower->leader = NULL;
             follower->bookkeepingFlags &= ~MB_FOLLOWER;
         }
@@ -4154,8 +4185,12 @@ void monsterDetails(char buf[], creature *monst) {
         playerKnownAverageDamage = (player.info.damage.upperBound + player.info.damage.lowerBound) / 2;
         playerKnownMaxDamage = player.info.damage.upperBound;
     } else {
-        playerKnownAverageDamage = (rogue.weapon->damage.upperBound + rogue.weapon->damage.lowerBound) / 2;
-        playerKnownMaxDamage = rogue.weapon->damage.upperBound;
+        fixpt strengthFactor = damageFraction(strengthModifier(rogue.weapon));
+        short tempLow = rogue.weapon->damage.lowerBound * strengthFactor / FP_FACTOR;
+        short tempHigh = rogue.weapon->damage.upperBound * strengthFactor / FP_FACTOR;
+
+        playerKnownAverageDamage = max(1, (tempLow + tempHigh) / 2);
+        playerKnownMaxDamage = max(1, tempHigh);
     }
 
     // Combat info for the player attacking the monster (or whether it's captive)

@@ -207,6 +207,19 @@ short actionMenu(short x, boolean playingBack) {
         buttonCount = 0;
 
         if (playingBack) {
+#ifdef ENABLE_PLAYBACK_SWITCH
+            if (KEYBOARD_LABELS) {
+                sprintf(buttons[buttonCount].text,  "  %sP: %sPlay from here  ", yellowColorEscape, whiteColorEscape);
+            } else {
+                strcpy(buttons[buttonCount].text, "  Play from here  ");
+            }
+            buttons[buttonCount].hotkey[0] = SWITCH_TO_PLAYING_KEY;
+            buttonCount++;
+
+            sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
+            buttons[buttonCount].flags &= ~B_ENABLED;
+            buttonCount++;
+#endif
             if (KEYBOARD_LABELS) {
                 sprintf(buttons[buttonCount].text,  "  %sk: %sFaster playback  ", yellowColorEscape, whiteColorEscape);
             } else {
@@ -235,6 +248,13 @@ short actionMenu(short x, boolean playingBack) {
                 strcpy(buttons[buttonCount].text, "  Fast forward to turn  ");
             }
             buttons[buttonCount].hotkey[0] = '0';
+            buttonCount++;
+            if (KEYBOARD_LABELS) {
+                sprintf(buttons[buttonCount].text,  "  %s<:%s Previous Level  ", yellowColorEscape, whiteColorEscape);
+            } else {
+                strcpy(buttons[buttonCount].text, "  Previous Level  ");
+            }
+            buttons[buttonCount].hotkey[0] = ASCEND_KEY;
             buttonCount++;
             if (KEYBOARD_LABELS) {
                 sprintf(buttons[buttonCount].text,  "  %s>:%s Next Level  ", yellowColorEscape, whiteColorEscape);
@@ -362,7 +382,7 @@ short actionMenu(short x, boolean playingBack) {
         buttonCount++;
         if (KEYBOARD_LABELS) { // No help button if we're not in keyboard mode.
             sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ", yellowColorEscape, whiteColorEscape);
-            buttons[buttonCount].hotkey[0] = HELP_KEY;
+            buttons[buttonCount].hotkey[0] = BROGUE_HELP_KEY;
             buttonCount++;
         }
         sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
@@ -467,7 +487,6 @@ void initializeMenuButtons(buttonState *state, brogueButton buttons[5]) {
         }
         buttons[buttonCount].hotkey[0] = RIGHT_KEY;
         buttons[buttonCount].hotkey[1] = RIGHT_ARROW;
-        buttons[buttonCount].hotkey[2] = NUMPAD_6;
         buttonCount++;
 
         strcpy(buttons[buttonCount].text,       "  Menu  ");
@@ -813,6 +832,13 @@ void mainInputLoop() {
             if (playingBack) {
                 rogue.playbackMode = true;
                 executePlaybackInput(&theEvent);
+#ifdef ENABLE_PLAYBACK_SWITCH
+                if (!rogue.playbackMode) {
+                    // Playback mode is off, user must have taken control
+                    // Redraw buttons to reflect that
+                    initializeMenuButtons(&state, buttons);
+                }
+#endif
                 playingBack = rogue.playbackMode;
                 rogue.playbackMode = false;
             } else {
@@ -868,7 +894,7 @@ void displayLevel() {
     short i, j;
 
     for( i=0; i<DCOLS; i++ ) {
-        for( j=0; j<DROWS; j++ ) {
+        for (j = DROWS-1; j >= 0; j--) {
             refreshDungeonCell(i, j);
         }
     }
@@ -1264,12 +1290,6 @@ void getCellAppearance(short x, short y, enum displayGlyph *returnChar, color *r
             return;
         }
 
-        // Smooth out walls: if there's a "wall-ish" tile drawn below us, just draw the wall top
-        if ((cellChar == G_WALL || cellChar == G_GRANITE) && coordinatesAreInMap(x, y+1)
-            && glyphIsWallish(displayBuffer[mapToWindowX(x)][mapToWindowY(y+1)].character)) {
-            cellChar = G_WALL_TOP;
-        }
-
         if (gasAugmentWeight && ((pmap[x][y].flags & DISCOVERED) || rogue.playbackOmniscience)) {
             if (!rogue.trueColorMode || !needDistinctness) {
                 applyColorAverage(&cellForeColor, &gasAugmentColor, gasAugmentWeight);
@@ -1317,6 +1337,12 @@ void getCellAppearance(short x, short y, enum displayGlyph *returnChar, color *r
             cellForeColor = colorFromComponents(pmap[x][y].rememberedAppearance.foreColorComponents);
             cellBackColor = colorFromComponents(pmap[x][y].rememberedAppearance.backColorComponents);
         }
+    }
+
+    // Smooth out walls: if there's a "wall-ish" tile drawn below us, just draw the wall top
+    if ((cellChar == G_WALL || cellChar == G_GRANITE) && coordinatesAreInMap(x, y+1)
+        && glyphIsWallish(displayBuffer[mapToWindowX(x)][mapToWindowY(y+1)].character)) {
+        cellChar = G_WALL_TOP;
     }
 
     if (((pmap[x][y].flags & ITEM_DETECTED) || monsterWithDetectedItem
@@ -1475,13 +1501,6 @@ void refreshDungeonCell(short x, short y) {
 
     getCellAppearance(x, y, &cellChar, &foreColor, &backColor);
     plotCharWithColor(cellChar, mapToWindowX(x), mapToWindowY(y), &foreColor, &backColor);
-
-    // We use different wall sprites depending on what tile is below, so we need
-    // to refresh the cell above too
-    if (y > 0) {
-        getCellAppearance(x, y - 1, &cellChar, &foreColor, &backColor);
-        plotCharWithColor(cellChar, mapToWindowX(x), mapToWindowY(y - 1), &foreColor, &backColor);
-    }
 }
 
 void applyColorMultiplier(color *baseColor, const color *multiplierColor) {
@@ -2156,17 +2175,17 @@ void funkyFade(cellDisplayBuffer displayBuf[COLS][ROWS], const color *colorStart
                     percentComplete *= 1.0 + (100.0 - min(100, distanceMap[windowToMapX(i)][windowToMapY(j)])) / 100.;
                 }
 
-                weight = (short) percentComplete + weightGrid[i][j][2] * percentComplete * 10;
+                weight = (short)(percentComplete + weightGrid[i][j][2] * percentComplete * 10);
                 weight = min(100, weight);
                 tempColor = black;
 
-                tempColor.red = ((short) percentComplete + weightGrid[i][j][0] * percentComplete * 10) * colorMid.red / 100;
+                tempColor.red = (short)(percentComplete + weightGrid[i][j][0] * percentComplete * 10) * colorMid.red / 100;
                 tempColor.red = min(colorMid.red, tempColor.red);
 
-                tempColor.green = ((short) percentComplete + weightGrid[i][j][1] * percentComplete * 10) * colorMid.green / 100;
+                tempColor.green = (short)(percentComplete + weightGrid[i][j][1] * percentComplete * 10) * colorMid.green / 100;
                 tempColor.green = min(colorMid.green, tempColor.green);
 
-                tempColor.blue = ((short) percentComplete + weightGrid[i][j][2] * percentComplete * 10) * colorMid.blue / 100;
+                tempColor.blue = (short)(percentComplete + weightGrid[i][j][2] * percentComplete * 10) * colorMid.blue / 100;
                 tempColor.blue = min(colorMid.blue, tempColor.blue);
 
                 backColor = black;
@@ -2314,7 +2333,7 @@ void displayLoops() {
 }
 
 void exploreKey(const boolean controlKey) {
-    short x, y, finalX, finalY;
+    short x, y, finalX = 0, finalY = 0;
     short **exploreMap;
     enum directions dir;
     boolean tooDark = false;
@@ -2601,7 +2620,7 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
         case MESSAGE_ARCHIVE_KEY:
             displayMessageArchive();
             break;
-        case HELP_KEY:
+        case BROGUE_HELP_KEY:
             printHelpScreen();
             break;
         case DISCOVERIES_KEY:
@@ -3544,13 +3563,15 @@ void refreshSideBar(short focusX, short focusY, boolean focusedEntityMustGoFirst
         // count up the number of candidate locations
         for (k=0; k<max(DROWS, DCOLS); k++) {
             for (i = px-k; i <= px+k; i++) {
-                for (j = py-k; j <= py+k; j++) {
+                // we are scanning concentric squares. The first and last columns
+                // need to be stepped through, but others can be jumped over.
+                short step = (i == px-k || i == px+k) ? 1 : 2*k;
+                for (j = py-k; j <= py+k; j += step) {
+                    if (displayEntityCount >= ROWS - 1) goto no_space_for_more_entities;
                     if (coordinatesAreInMap(i, j)
-                        && (i == px-k || i == px+k || j == py-k || j == py+k)
                         && !addedEntity[i][j]
-                        && (playerCanDirectlySee(i, j) || (indirectVision && (playerCanSeeOrSense(i, j) || rogue.playbackOmniscience)))
                         && cellHasTMFlag(i, j, TM_LIST_IN_SIDEBAR)
-                        && displayEntityCount < ROWS - 1) {
+                        && (playerCanDirectlySee(i, j) || (indirectVision && (playerCanSeeOrSense(i, j) || rogue.playbackOmniscience)))) {
 
                         addedEntity[i][j] = true;
                         entityList[displayEntityCount] = tileCatalog[pmap[i][j].layers[layerWithTMFlag(i, j, TM_LIST_IN_SIDEBAR)]].description;
@@ -3562,6 +3583,7 @@ void refreshSideBar(short focusX, short focusY, boolean focusedEntityMustGoFirst
                 }
             }
         }
+        no_space_for_more_entities:;
     }
 
     // Entities are now listed. Start printing.
@@ -4234,7 +4256,8 @@ short creatureHealthChangePercent(creature *monst) {
     if (monst->previousHealthPoints <= 0) {
         return 0;
     }
-    return 100 * (monst->currentHP - monst->previousHealthPoints) / monst->info.maxHP;
+    // ignore overhealing from tranference
+    return 100 * (monst->currentHP - min(monst->previousHealthPoints, monst->info.maxHP)) / monst->info.maxHP;
 }
 
 // returns the y-coordinate after the last line printed

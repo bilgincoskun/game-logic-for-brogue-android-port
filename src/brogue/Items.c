@@ -1321,7 +1321,7 @@ void call(item *theItem) {
 //  a "sandalwood" staff, a "ruby" ring) will be in dark purple, and the Amulet of Yendor and lumenstones will be in yellow.
 //  BaseColor itself will be the color that the name reverts to outside of these colored portions.
 void itemName(item *theItem, char *root, boolean includeDetails, boolean includeArticle, color *baseColor) {
-    char buf[DCOLS * 5], pluralization[10], article[10] = "",
+    char buf[DCOLS * 5], pluralization[10], article[10] = "", runicName[30],
     grayEscapeSequence[5], purpleEscapeSequence[5], yellowEscapeSequence[5], baseEscapeSequence[5];
     color tempColor;
 
@@ -1370,19 +1370,9 @@ void itemName(item *theItem, char *root, boolean includeDetails, boolean include
 
                 if (theItem->flags & ITEM_RUNIC) {
                     if ((theItem->flags & ITEM_RUNIC_IDENTIFIED) || rogue.playbackOmniscience) {
-                        if (theItem->enchant2 == W_SLAYING) {
-                            sprintf(buf, "%s of %s slaying%s",
-                                    root,
-                                    monsterClassCatalog[theItem->vorpalEnemy].name,
-                                    grayEscapeSequence);
-                            strcpy(root, buf);
-                        } else {
-                            sprintf(buf, "%s of %s%s",
-                                    root,
-                                    weaponRunicNames[theItem->enchant2],
-                                    grayEscapeSequence);
-                            strcpy(root, buf);
-                        }
+                        itemRunicName(theItem, runicName);
+                        sprintf(buf, "%s of %s%s", root, runicName, grayEscapeSequence);
+                        strcpy(root, buf);
                     } else if (theItem->flags & (ITEM_IDENTIFIED | ITEM_RUNIC_HINTED)) {
                         if (grayEscapeSequence[0]) {
                             strcat(root, grayEscapeSequence);
@@ -1401,13 +1391,9 @@ void itemName(item *theItem, char *root, boolean includeDetails, boolean include
                 if ((theItem->flags & ITEM_RUNIC)
                     && ((theItem->flags & ITEM_RUNIC_IDENTIFIED)
                         || rogue.playbackOmniscience)) {
-                        if (theItem->enchant2 == A_IMMUNITY) {
-                            sprintf(buf, "%s of %s immunity", root, monsterClassCatalog[theItem->vorpalEnemy].name);
-                            strcpy(root, buf);
-                        } else {
-                            sprintf(buf, "%s of %s", root, armorRunicNames[theItem->enchant2]);
-                            strcpy(root, buf);
-                        }
+                    itemRunicName(theItem, runicName);
+                    sprintf(buf, "%s of %s%s", root, runicName, grayEscapeSequence);
+                    strcpy(root, buf);
                     }
 
                 if ((theItem->flags & ITEM_IDENTIFIED) || rogue.playbackOmniscience) {
@@ -1627,6 +1613,49 @@ void itemName(item *theItem, char *root, boolean includeDetails, boolean include
         strcpy(root, buf);
     }
     return;
+}
+
+void itemKindName(item *theItem, char *kindName) {
+
+    // use lookup table for randomly generated items with more than one kind per category
+    if (theItem->category & (ARMOR | CHARM | FOOD | POTION | RING | SCROLL | STAFF | WAND | WEAPON)) {
+        strcpy(kindName, tableForItemCategory(theItem->category, NULL)[theItem->kind].name);
+    } else {
+        switch (theItem->category) {
+            case KEY:
+                strcpy(kindName, keyTable[theItem->kind].name); //keys are not randomly generated but have a lookup table
+                break;
+            // these items have only one kind per category and no lookup table
+            case GOLD:
+                strcpy(kindName, "gold pieces");
+                break;
+            case AMULET:
+                strcpy(kindName, "amulet of yendor");
+                break;
+            case GEM:
+                strcpy(kindName, "lumenstone");
+                break;
+            default:
+                strcpy(kindName, "unknown");
+                break;
+        }
+    }
+}
+
+void itemRunicName(item *theItem, char *runicName) {
+    char vorpalEnemyMonsterClass[15] ="";
+
+    if (theItem->flags & ITEM_RUNIC) {
+        if ((theItem->category == ARMOR && theItem->enchant2 == A_IMMUNITY)
+        || (theItem->category == WEAPON && theItem->enchant2 == W_SLAYING)) {
+            sprintf(vorpalEnemyMonsterClass, "%s ", monsterClassCatalog[theItem->vorpalEnemy].name);
+        }
+        if (theItem->category == WEAPON) {
+            sprintf(runicName, "%s%s", vorpalEnemyMonsterClass, weaponRunicNames[theItem->enchant2]);
+        } else if (theItem->category == ARMOR) {
+            sprintf(runicName, "%s%s", vorpalEnemyMonsterClass, armorRunicNames[theItem->enchant2]);
+        }
+    }
 }
 
 // kindCount is optional
@@ -2141,7 +2170,7 @@ void itemDetails(char *buf, item *theItem) {
                                     && runicWeaponChance(theItem, false, 0) < runicWeaponChance(theItem, true, enchant + enchantIncrement(theItem))){
                                     sprintf(buf2, "(If the %s is enchanted, the chance will increase to %i%%",
                                             theName,
-                                            runicWeaponChance(theItem, true, (float) (enchant + enchantIncrement(theItem))));
+                                            runicWeaponChance(theItem, true, enchant + enchantIncrement(theItem)));
                                     strcat(buf, buf2);
                                     if (nextLevelState) {
                                         if (theItem->enchant2 == W_FORCE) {
@@ -2308,7 +2337,7 @@ void itemDetails(char *buf, item *theItem) {
             // charges
             new = apparentRingBonus(RING_WISDOM);
             if ((theItem->flags & ITEM_IDENTIFIED)  || rogue.playbackOmniscience) {
-                sprintf(buf2, "\n\nThe %s has %i charges remaining out of a maximum of %i charges, and%s recovers a charge in approximately %i turns. ",
+                sprintf(buf2, "\n\nThe %s has %i charges remaining out of a maximum of %i charges, and%s recovers a charge in approximately %lli turns. ",
                         theName,
                         theItem->charges,
                         theItem->enchant1,
@@ -2316,7 +2345,7 @@ void itemDetails(char *buf, item *theItem) {
                         FP_DIV(staffChargeDuration(theItem), 10 * ringWisdomMultiplier(new * FP_FACTOR)));
                 strcat(buf, buf2);
             } else if (theItem->flags & ITEM_MAX_CHARGES_KNOWN) {
-                sprintf(buf2, "\n\nThe %s has a maximum of %i charges, and%s recovers a charge in approximately %i turns. ",
+                sprintf(buf2, "\n\nThe %s has a maximum of %i charges, and%s recovers a charge in approximately %lli turns. ",
                         theName,
                         theItem->enchant1,
                         new == 0 ? "" : ", with your current rings,",
@@ -3540,6 +3569,11 @@ void negate(creature *monst) {
         monst->info.flags &= ~MONST_IMMUNE_TO_FIRE;
         monst->movementSpeed = monst->info.movementSpeed;
         monst->attackSpeed = monst->info.attackSpeed;
+        if (monst != &player && monst->mutationIndex > -1 && mutationCatalog[monst->mutationIndex].canBeNegated
+            && rogue.patchVersion >= 3) {
+
+            monst->mutationIndex = -1;
+        }
         if (monst != &player && (monst->info.flags & NEGATABLE_TRAITS)) {
             if ((monst->info.flags & MONST_FIERY) && monst->status[STATUS_BURNING]) {
                 extinguishFireOnCreature(monst);
@@ -3945,6 +3979,8 @@ boolean imbueInvisibility(creature *monst, short duration) {
 
     if (monst && !(monst->info.flags & (MONST_INANIMATE | MONST_INVISIBLE | MONST_INVULNERABLE))) {
         if (monst == &player || monst->creatureState == MONSTER_ALLY) {
+            autoID = true;
+        } else if (canSeeMonster(monst) && monsterRevealed(monst)) {
             autoID = true;
         }
         monst->status[STATUS_INVISIBLE] = monst->maxStatus[STATUS_INVISIBLE] = duration;
@@ -4361,8 +4397,13 @@ boolean updateBolt(bolt *theBolt, creature *caster, short x, short y,
                 if (!(monst->info.flags & (MONST_INANIMATE | MONST_INVULNERABLE))) {
                     newMonst = cloneMonster(monst, true, true);
                     if (newMonst) {
-                        newMonst->currentHP = newMonst->info.maxHP = (newMonst->currentHP + 1) / 2;
-                        monst->currentHP = monst->info.maxHP = (monst->currentHP + 1) / 2;
+                        if (rogue.patchVersion >= 1) {
+                            monst->info.maxHP = newMonst->info.maxHP = (monst->info.maxHP + 1) / 2;
+                            monst->currentHP = newMonst->currentHP = min(monst->currentHP, monst->info.maxHP);
+                        } else {
+                            newMonst->currentHP = newMonst->info.maxHP = (newMonst->currentHP + 1) / 2;
+                            monst->currentHP = monst->info.maxHP = (monst->currentHP + 1) / 2;
+                        }
                         if (boltCatalog[BOLT_PLENTY].backColor) {
                             flashMonster(monst, boltCatalog[BOLT_PLENTY].backColor, 100);
                             flashMonster(newMonst, boltCatalog[BOLT_PLENTY].backColor, 100);
@@ -4647,7 +4688,7 @@ boolean zap(short originLoc[2], short targetLoc[2], bolt *theBolt, boolean hideD
                 sprintf(buf, "%s deflect%s the %s",
                         monstName,
                         (monst == &player ? "" : "s"),
-                        theBolt->name);
+                        hideDetails ? "bolt" : theBolt->name);
                 combatMessage(buf, 0);
             }
             if (monst == &player

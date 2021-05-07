@@ -123,7 +123,7 @@ short hitProbability(creature *attacker, creature *defender) {
         }
         accuracy = player.info.accuracy * accuracyFraction(netEnchant(rogue.weapon)) / FP_FACTOR;
     }
-    hitProbability = accuracy * defenseFraction(defense) / FP_FACTOR;
+    hitProbability = accuracy * defenseFraction(defense * FP_FACTOR) / FP_FACTOR;
     if (hitProbability > 100) {
         hitProbability = 100;
     } else if (hitProbability < 0) {
@@ -1044,7 +1044,10 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
     monsterName(defenderName, defender, true);
 
     if ((attacker->info.abilityFlags & MA_SEIZES)
-        && (!(attacker->bookkeepingFlags & MB_SEIZING) || !(defender->bookkeepingFlags & MB_SEIZED))) {
+        && (!(attacker->bookkeepingFlags & MB_SEIZING) || !(defender->bookkeepingFlags & MB_SEIZED))
+        && (rogue.patchVersion < 2 ||
+            (distanceBetween(attacker->xLoc, attacker->yLoc, defender->xLoc, defender->yLoc) == 1
+            && !diagonalBlocked(attacker->xLoc, attacker->yLoc, defender->xLoc, defender->yLoc, false)))) {
 
         attacker->bookkeepingFlags |= MB_SEIZING;
         defender->bookkeepingFlags |= MB_SEIZED;
@@ -1570,7 +1573,7 @@ void addPoison(creature *monst, short durationIncrement, short concentrationIncr
 // AdministrativeDeath means the monster simply disappears, with no messages, dropped item, DFs or other effect.
 void killCreature(creature *decedent, boolean administrativeDeath) {
     short x, y;
-    char monstName[DCOLS], buf[DCOLS];
+    char monstName[DCOLS], buf[DCOLS * 3];
 
     if (decedent->bookkeepingFlags & MB_IS_DYING) {
         // monster has already been killed; let's avoid overkill
@@ -1597,12 +1600,13 @@ void killCreature(creature *decedent, boolean administrativeDeath) {
         }
     }
 
-    if (!administrativeDeath && (decedent->info.abilityFlags & MA_DF_ON_DEATH)) {
+    if (!administrativeDeath && (decedent->info.abilityFlags & MA_DF_ON_DEATH)
+        && ((rogue.patchVersion < 3) || !(decedent->bookkeepingFlags & MB_IS_FALLING))) {
         spawnDungeonFeature(decedent->xLoc, decedent->yLoc, &dungeonFeatureCatalog[decedent->info.DFType], true, false);
 
         if (monsterText[decedent->info.monsterID].DFMessage[0] && canSeeMonster(decedent)) {
             monsterName(monstName, decedent, true);
-            sprintf(buf, "%s %s", monstName, monsterText[decedent->info.monsterID].DFMessage);
+            snprintf(buf, DCOLS * 3, "%s %s", monstName, monsterText[decedent->info.monsterID].DFMessage);
             resolvePronounEscapes(buf, decedent);
             message(buf, false);
         }

@@ -207,7 +207,7 @@ void describeLocation(char *buf, short x, short y) {
         && !canSeeMonster(monst)
         && monsterRevealed(monst)) {
 
-        strcpy(adjective, (((!player.status[STATUS_HALLUCINATING] || rogue.playbackOmniscience) && monst->info.displayChar >= 'a' && monst->info.displayChar <= 'z')
+        strcpy(adjective, (((!player.status[STATUS_HALLUCINATING] || rogue.playbackOmniscience) && !monst->info.isLarge)
                            || (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience && rand_range(0, 1)) ? "small" : "large"));
         if (pmap[x][y].flags & DISCOVERED) {
             strcpy(object, tileText(x, y));
@@ -441,7 +441,7 @@ void useKeyAt(item *theItem, short x, short y) {
 }
 
 short randValidDirectionFrom(creature *monst, short x, short y, boolean respectAvoidancePreferences) {
-    short i, newX, newY, validDirectionCount = 0, randIndex;
+    short i, newX, newY, validDirections[8], count = 0;
 
     brogueAssert(rogue.RNG == RNG_SUBSTANTIVE);
     for (i=0; i<8; i++) {
@@ -453,31 +453,14 @@ short randValidDirectionFrom(creature *monst, short x, short y, boolean respectA
             && (!respectAvoidancePreferences
                 || (!monsterAvoids(monst, newX, newY))
                 || ((pmap[newX][newY].flags & HAS_PLAYER) && monst->creatureState != MONSTER_ALLY))) {
-            validDirectionCount++;
+            validDirections[count++] = i;
         }
     }
-    if (validDirectionCount == 0) {
+    if (count == 0) {
         // Rare, and important in this case that the function returns BEFORE a random roll is made to avoid OOS.
         return NO_DIRECTION;
     }
-    randIndex = rand_range(1, validDirectionCount);
-    validDirectionCount = 0;
-    for (i=0; i<8; i++) {
-        newX = x + nbDirs[i][0];
-        newY = y + nbDirs[i][1];
-        if (coordinatesAreInMap(newX, newY)
-            && !cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY)
-            && !diagonalBlocked(x, y, newX, newY, false)
-            && (!respectAvoidancePreferences
-                || (!monsterAvoids(monst, newX, newY))
-                || ((pmap[newX][newY].flags & HAS_PLAYER) && monst->creatureState != MONSTER_ALLY))) {
-            validDirectionCount++;
-            if (validDirectionCount == randIndex) {
-                return i;
-            }
-        }
-    }
-    return NO_DIRECTION; // should rarely get here
+    return validDirections[rand_range(0, count - 1)];
 }
 
 void vomit(creature *monst) {
@@ -498,16 +481,37 @@ void moveEntrancedMonsters(enum directions dir) {
 
     dir = oppositeDirection(dir);
 
-    for (monst = monsters->nextCreature; monst != NULL; monst = nextMonst) {
-        nextMonst = monst->nextCreature;
-        if (monst->status[STATUS_ENTRANCED]
-            && !monst->status[STATUS_STUCK]
-            && !monst->status[STATUS_PARALYZED]
-            && !(monst->bookkeepingFlags & MB_CAPTIVE)) {
+    if (rogue.patchVersion >= 3) {
+        for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+            monst->bookkeepingFlags &= ~MB_HAS_ENTRANCED_MOVED;
+        }
 
-            moveMonster(monst, nbDirs[dir][0], nbDirs[dir][1]);
+        for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+            if (!(monst->bookkeepingFlags & MB_HAS_ENTRANCED_MOVED)
+                && monst->status[STATUS_ENTRANCED]
+                && !monst->status[STATUS_STUCK]
+                && !monst->status[STATUS_PARALYZED]
+                && !(monst->bookkeepingFlags & MB_CAPTIVE)) {
+
+                moveMonster(monst, nbDirs[dir][0], nbDirs[dir][1]);
+                monst->bookkeepingFlags |= MB_HAS_ENTRANCED_MOVED;
+                monst = monsters; // loop through from the beginning to be safe
+            }
+        }
+
+    } else {
+        for (monst = monsters->nextCreature; monst != NULL; monst = nextMonst) {
+            nextMonst = monst->nextCreature;
+            if (monst->status[STATUS_ENTRANCED]
+                && !monst->status[STATUS_STUCK]
+                && !monst->status[STATUS_PARALYZED]
+                && !(monst->bookkeepingFlags & MB_CAPTIVE)) {
+
+                moveMonster(monst, nbDirs[dir][0], nbDirs[dir][1]);
+            }
         }
     }
+
 }
 
 void becomeAllyWith(creature *monst) {
@@ -860,7 +864,7 @@ boolean playerMoves(short direction) {
             }
         }
 
-        if (player.status[STATUS_STUCK] && cellHasTerrainFlag(x, y, T_ENTANGLES)) {
+        if (rogue.patchVersion < 1 && player.status[STATUS_STUCK] && cellHasTerrainFlag(x, y, T_ENTANGLES)) {
                 // Don't interrupt exploration with this message.
             if (--player.status[STATUS_STUCK]) {
                 if (!rogue.automationActive) {
@@ -1083,6 +1087,29 @@ boolean playerMoves(short direction) {
                 brogueAssert(!alreadyRecorded);
                 rogue.disturbed = true;
                 return false;
+            }
+        }
+
+        if (rogue.patchVersion >= 1 && player.status[STATUS_STUCK] && cellHasTerrainFlag(x, y, T_ENTANGLES)) {
+                // Don't interrupt exploration with this message.
+            if (--player.status[STATUS_STUCK]) {
+                if (!rogue.automationActive) {
+                    message("you struggle but cannot free yourself.", false);
+                }
+                moveEntrancedMonsters(direction);
+                if (!alreadyRecorded) {
+                    recordKeystroke(directionKeys[initialDirection], false, false);
+                    alreadyRecorded = true;
+                }
+                playerTurnEnded();
+                return true;
+            } else {
+                if (!rogue.automationActive) {
+                    message("you break free!", false);
+                }
+                if (tileCatalog[pmap[x][y].layers[SURFACE]].flags & T_ENTANGLES) {
+                    pmap[x][y].layers[SURFACE] = NOTHING;
+                }
             }
         }
 
@@ -2236,7 +2263,7 @@ void updateFieldOfViewDisplay(boolean updateDancingTerrain, boolean refreshDispl
     assureCosmeticRNG;
 
     for (i=0; i<DCOLS; i++) {
-        for (j=0; j<DROWS; j++) {
+        for (j = DROWS-1; j >= 0; j--) {
             if (pmap[i][j].flags & IN_FIELD_OF_VIEW
                 && (max(0, tmap[i][j].light[0])
                     + max(0, tmap[i][j].light[1])
