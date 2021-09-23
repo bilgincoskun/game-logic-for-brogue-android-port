@@ -29,7 +29,7 @@
 #include "PlatformDefines.h"
 
 #ifndef BROGUE_EXTRA_VERSION
-#error "The BROGUE_EXTRA_VERSION macro is undefined."
+#define BROGUE_EXTRA_VERSION ""
 #endif
 
 // unicode: comment this line to revert to ASCII

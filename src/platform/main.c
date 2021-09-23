@@ -3,7 +3,7 @@
 #include "platform.h"
 
 #ifndef DATADIR
-#error "The DATADIR macro is undefined."
+#define DATADIR "."
 #endif
 
 struct brogueConsole currentConsole;
