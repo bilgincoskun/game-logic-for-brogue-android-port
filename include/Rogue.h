@@ -1273,6 +1273,7 @@ typedef struct cellDisplayBuffer {
     char foreColorComponents[3];
     char backColorComponents[3];
     char opacity;
+    boolean needsUpdate;
 } cellDisplayBuffer;
 
 typedef struct pcell {                              // permanent cell; have to remember this stuff to save levels
